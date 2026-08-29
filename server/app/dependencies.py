@@ -24,7 +24,7 @@ def _verify_access_token(token: str) -> dict:
         payload = jwt.decode(
             token,
             signing_key.key,
-            algorithms=signing_key.alg,
+            algorithms=[signing_key.algorithm_name],
             issuer=settings.zitadel_issuer,
             options={"verify_aud": False},
         )
