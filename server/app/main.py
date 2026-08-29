@@ -1,0 +1,31 @@
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.config import settings
+from app.routers import cards_router, members_router
+
+app = FastAPI(title="Motion-U Portal API", version="0.1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(cards_router.router)
+app.include_router(members_router.router)
+
+
+@app.get("/api/v1/health")
+def health():
+    return {"status": "ok"}
+
+
+def main() -> None:
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)

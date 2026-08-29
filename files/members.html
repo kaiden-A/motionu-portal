@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Members · Motion-U Portals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="mu-header"></div>
+
+<section class="section" style="padding-bottom:40px;">
+  <div class="wrap">
+    <span class="eyebrow">Directory</span>
+    <h1 class="h-xl mt-16 text-anim" data-text-fx="soft-blur-in">Every member, one directory</h1>
+    <p class="lede mt-16">Search by name, or filter by department to see who's carrying which badge.</p>
+  </div>
+</section>
+
+<section class="section--tight" style="padding-top:0;">
+  <div class="wrap">
+    <div class="filter-bar">
+      <div class="search-box"></div>
+      <div class="chip-row" id="mu-dept-chips"></div>
+    </div>
+
+    <div class="grid grid-4" id="mu-member-grid"></div>
+    <p id="mu-empty" class="text-faint mt-32" style="display:none;">No members match that search.</p>
+  </div>
+</section>
+
+<div id="mu-footer"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="animate.js"></script>
+<script>
+  muInitChrome("members.html");
+
+  let activeDept = muQueryParam("dept") || "all";
+  let query = "";
+
+  function renderMembers() {
+    const grid = document.getElementById("mu-member-grid");
+    const empty = document.getElementById("mu-empty");
+    const filtered = MU_DATA.members.filter((m) => {
+      const matchesDept = activeDept === "all" || m.dept === activeDept;
+      const matchesQuery = m.name.toLowerCase().includes(query.toLowerCase()) || m.role.toLowerCase().includes(query.toLowerCase());
+      return matchesDept && matchesQuery;
+    });
+
+    grid.innerHTML = filtered.map((m) =>
+      muRenderBadge(m, { size: "sm", href: `profile.html?id=${m.id}` })
+    ).join("");
+
+    empty.style.display = filtered.length ? "none" : "block";
+  }
+
+  function renderChips() {
+    const chips = [{ key: "all", short: "All" }, ...MU_DATA.departments];
+    document.getElementById("mu-dept-chips").innerHTML = chips.map((d) => `
+      <button class="chip ${activeDept === d.key ? "is-active" : ""}" data-dept="${d.key !== "all" ? d.key : ""}" data-key="${d.key}">
+        ${d.key !== "all" ? '<span class="chip-dot"></span>' : ""} ${d.short}
+      </button>`).join("");
+
+    document.querySelectorAll("#mu-dept-chips .chip").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        activeDept = btn.dataset.key;
+        renderChips();
+        renderMembers();
+      });
+    });
+  }
+
+  // Search box markup (built here to keep the icon SVG out of the template literal above)
+  document.querySelector(".search-box").innerHTML = `
+    ${muIcon("search")}
+    <input type="text" placeholder="Search by name or role…" id="mu-search" aria-label="Search members by name or role" />
+  `;
+  document.getElementById("mu-search").addEventListener("input", (e) => {
+    query = e.target.value;
+    renderMembers();
+  });
+
+  renderChips();
+  renderMembers();
+</script>
+</body>
+</html>

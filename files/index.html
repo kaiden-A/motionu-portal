@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Motion-U Portals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="mu-header"></div>
+
+<!-- ============ PAGE HEAD ============ -->
+<section style="padding:48px 0 8px;">
+  <div class="wrap">
+    <div class="flex justify-between" style="align-items:flex-end; flex-wrap:wrap; gap:20px;">
+      <div>
+        <span class="eyebrow">Motion-U Portals</span>
+        <h1 class="h-xl mt-16 text-anim" data-text-fx="soft-blur-in">Dashboard</h1>
+        <p class="lede mt-16">Welcome back, <span id="mu-welcome-name"></span> One card, every department, event, and achievement.</p>
+      </div>
+      <div class="flex gap-12" style="flex-wrap:wrap;">
+        <a href="profile.html?id=MU-0001" class="btn btn-primary" id="mu-view-card"><i class="fa-solid fa-id-card"></i>View my card</a>
+        <a href="cards.html" class="btn btn-ghost"><i class="fa-solid fa-table-columns"></i>Manage cards</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section class="section--alt" style="padding:32px 0;">
+  <div class="wrap">
+    <div class="grid grid-4" id="mu-stats"></div>
+  </div>
+</section>
+
+<!-- ============ MY CARD + RECENT ACTIVITY ============ -->
+<section style="padding:48px 0;">
+  <div class="wrap grid grid-2" style="align-items:start; gap:24px;">
+    <div class="panel" id="mu-my-card"></div>
+    <div>
+      <span class="eyebrow">Live from the stations</span>
+      <h2 class="h-lg mt-16">Recent achievements</h2>
+      <div class="flex mt-24" style="flex-direction:column; gap:10px;" id="mu-activity"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APPS + DEPARTMENTS ============ -->
+<section class="section--alt" style="padding:48px 0 64px;">
+  <div class="wrap grid grid-2" style="align-items:start; gap:48px;">
+    <div>
+      <span class="eyebrow">App directory</span>
+      <h2 class="h-lg mt-16">Jump into an app</h2>
+      <div class="grid grid-2 mt-24" id="mu-featured-apps"></div>
+      <a href="apps.html" class="btn btn-ghost btn-sm mt-16"><i class="fa-solid fa-grip"></i>Browse all apps</a>
+    </div>
+    <div>
+      <span class="eyebrow">Structure</span>
+      <h2 class="h-lg mt-16">Departments</h2>
+      <div class="grid grid-2 mt-24" id="mu-dept-grid"></div>
+      <a href="members.html" class="btn btn-ghost btn-sm mt-16"><i class="fa-solid fa-users"></i>See all members</a>
+    </div>
+  </div>
+</section>
+
+<div id="mu-footer"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="animate.js"></script>
+<script>
+  muInitChrome("index.html");
+
+  const me = muCurrentMember() || MU_DATA.memberById("MU-0001");
+  document.getElementById("mu-welcome-name").textContent = `${me.name.split(" ")[0]}.`;
+  document.getElementById("mu-view-card").href = `profile.html?id=${me.id}`;
+
+  // My card widget
+  const myCard = MU_DATA.cardById(me.cardId);
+  document.getElementById("mu-my-card").innerHTML = `
+    <span class="eyebrow">My digital card</span>
+    <div class="mt-16 flex" style="justify-content:center;">
+      ${muRenderBadge(me, { size: "sm", tilt: true, sheen: true, href: `profile.html?id=${me.id}` })}
+    </div>
+    <div class="mt-16" style="text-align:center;">
+      <span class="status-pill ${myCard ? "active" : "unassigned"}">${myCard ? "Active card" : "No card assigned"}</span>
+      ${myCard ? `<div class="uid-tag mt-8">${myCard.uid}</div>` : ""}
+    </div>
+    <div class="mt-8" style="text-align:center; font-size:0.82rem; color:var(--text-faint);">Last tap · ${myCard ? myCard.lastTap : "—"}</div>`;
+
+  // Stats
+  const activeCards = MU_DATA.cards.filter((c) => c.assignedTo).length;
+  const unlockedTotal = MU_DATA.members.reduce((sum, m) => sum + m.achievements.length, 0);
+  const statsHTML = [
+    { num: MU_DATA.members.length, label: "Registered members" },
+    { num: `${activeCards}/${MU_DATA.cards.length}`, label: "Cards assigned" },
+    { num: MU_DATA.departments.length, label: "Departments" },
+    { num: unlockedTotal, label: "Achievements unlocked" },
+  ].map((s) => `
+    <div class="stat-card reveal">
+      <div class="stat-num">${s.num}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join("");
+  document.getElementById("mu-stats").innerHTML = statsHTML;
+
+  // Recent activity
+  document.getElementById("mu-activity").innerHTML = MU_DATA.activity.map((a) => {
+    const m = MU_DATA.memberById(a.memberId);
+    const ach = MU_DATA.achievements[a.achievement];
+    return `
+    <div class="achievement reveal">
+      <div class="achievement__icon">${ach.icon}</div>
+      <div class="achievement__body">
+        <div class="achievement__title">${m.name} <span class="text-faint" style="font-weight:400;">unlocked</span> ${ach.label}</div>
+        <div class="achievement__meta">${a.time} · <span class="dept-tag" data-dept="${m.dept}" style="display:inline-flex;">${MU_DATA.deptByKey(m.dept).short}</span></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Featured apps (first 4)
+  document.getElementById("mu-featured-apps").innerHTML = MU_DATA.apps.slice(0, 4).map((app) => `
+    <div class="app-card reveal" data-dept="${app.dept}">
+      <div class="app-card__icon">${muIcon(app.icon)}</div>
+      <div>
+        <div class="app-card__title" style="font-size:1rem;">${app.name}</div>
+      </div>
+      <div class="app-card__footer">
+        <span class="app-card__badge ${app.category === "Public" ? "is-public" : ""}">${app.category}</span>
+      </div>
+    </div>`).join("");
+
+  // Department grid
+  document.getElementById("mu-dept-grid").innerHTML = MU_DATA.departments.map((d) => {
+    const count = MU_DATA.members.filter((m) => m.dept === d.key).length;
+    return `
+    <a href="members.html?dept=${d.key}" class="panel reveal" data-dept="${d.key}" style="display:block; border-left: 3px solid var(--dept-color);">
+      <span class="dept-tag" data-dept="${d.key}">${d.short}</span>
+      <h3 class="h-md mt-8" style="text-transform:none; font-family:var(--font-body); font-weight:700;">${d.name}</h3>
+      <p class="text-faint mt-8" style="font-size:0.82rem;">${d.lead}</p>
+      <p class="mono text-dim mt-16" style="font-size:0.76rem;">${count} member${count === 1 ? "" : "s"}</p>
+    </a>`;
+  }).join("");
+</script>
+</body>
+</html>

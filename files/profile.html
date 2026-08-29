@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Profile · Motion-U Portals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .profile-grid { display: grid; grid-template-columns: 340px 1fr; gap: 48px; align-items: start; }
+  @media (max-width: 860px) { .profile-grid { grid-template-columns: 1fr; } }
+  .station-sim { border: 1px dashed var(--line); border-radius: var(--radius-md); padding: 16px; margin-top: 20px; }
+  .station-sim select { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 9px 12px; color: var(--text); width: 100%; margin: 10px 0; }
+  .log-toast { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--royal); opacity: 0; transform: translateY(4px); transition: all 0.3s var(--ease-soft); margin-top: 10px; }
+  .log-toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="mu-header"></div>
+
+<section class="section" style="padding-top:56px;">
+  <div class="wrap profile-grid">
+
+    <div>
+      <div id="mu-profile-badge"></div>
+      <div class="tap-target" style="display:flex; margin-top:24px; width:100%;" id="mu-tap-target">
+        <span class="pulse-ring"></span><span class="pulse-ring"></span><span class="pulse-ring"></span>
+        <button class="btn btn-primary btn-block" id="mu-tap-btn">Simulate NFC tap</button>
+      </div>
+
+      <div class="station-sim">
+        <span class="mono text-faint" style="font-size:0.68rem; text-transform:uppercase;">Station simulator</span>
+        <select id="mu-station-select" aria-label="Select a station to simulate a tap">
+          <option>5KM Race Finish — Motion-U 5KM Run</option>
+          <option>Workshop Check-in — UI/UX Bootcamp</option>
+          <option>Committee Desk — General Meeting</option>
+          <option>Pitch Day Entry — Founders Sprint</option>
+        </select>
+        <p class="text-faint" style="font-size:0.76rem;">Pick a station, then tap the card above. Motion-U Portals logs the action and checks the achievement rules.</p>
+        <div class="log-toast" id="mu-log-toast">✓ <span id="mu-log-text"></span></div>
+      </div>
+    </div>
+
+    <div>
+      <span class="eyebrow" id="mu-dept-eyebrow"></span>
+      <h1 class="h-xl mt-16" id="mu-profile-name"></h1>
+      <p class="lede mt-8" id="mu-profile-role"></p>
+      <p class="text-dim mt-16" id="mu-profile-bio" style="max-width:56ch;"></p>
+
+      <div class="grid grid-2 mt-32" style="gap:16px;">
+        <div class="panel">
+          <span class="mono text-faint" style="font-size:0.68rem; text-transform:uppercase;">Card status</span>
+          <div class="mt-8" id="mu-card-status"></div>
+        </div>
+        <div class="panel">
+          <span class="mono text-faint" style="font-size:0.68rem; text-transform:uppercase;">Member since</span>
+          <div class="mt-8 h-md" style="text-transform:none; font-family:var(--font-body); font-weight:700;" id="mu-member-since"></div>
+        </div>
+      </div>
+
+      <div class="mt-32">
+        <span class="eyebrow">Badges earned</span>
+        <div class="grid grid-3 mt-16" id="mu-achievements"></div>
+      </div>
+
+      <div class="mt-32">
+        <span class="eyebrow">Event participation</span>
+        <div class="flex mt-16" style="flex-direction:column; gap:10px;" id="mu-timeline"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="mu-footer"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="animate.js"></script>
+<script>
+  muInitChrome("");
+
+  const sessionMember = muCurrentMember();
+  const memberId = muQueryParam("id") || (sessionMember ? sessionMember.id : MU_DATA.members[0].id);
+  const member = MU_DATA.memberById(memberId) || MU_DATA.members[0];
+
+  function renderProfile() {
+    const dept = MU_DATA.deptByKey(member.dept);
+    const card = MU_DATA.cardById(member.cardId);
+
+    document.getElementById("mu-profile-badge").innerHTML =
+      muRenderBadge(member, { tilt: true, sheen: true });
+    muInitBadgeSheen(document.getElementById("mu-profile-badge"));
+
+    document.getElementById("mu-dept-eyebrow").innerHTML = `<span class="chip-dot" style="--dept-color: var(--dept-${member.dept});"></span> ${dept.name}`;
+    document.getElementById("mu-profile-name").textContent = member.name;
+    document.getElementById("mu-profile-role").textContent = member.role;
+    document.getElementById("mu-profile-bio").textContent =
+      `${member.role} in ${dept.name}. ${member.achievements.length} badge${member.achievements.length === 1 ? "" : "s"} earned so far this season.`;
+
+    document.getElementById("mu-card-status").innerHTML = card
+      ? `<span class="status-pill active">Active</span><div class="uid-tag mt-8">${card.uid}</div>`
+      : `<span class="status-pill unassigned">No card assigned</span>`;
+
+    document.getElementById("mu-member-since").textContent =
+      member.achievements.includes("founder") ? "Founding cohort" : "2025 intake";
+
+    // Achievements
+    const achGrid = document.getElementById("mu-achievements");
+    if (member.achievements.length) {
+      achGrid.innerHTML = member.achievements.map((k) => {
+        const a = MU_DATA.achievements[k];
+        return `
+        <div class="panel" style="padding:18px; text-align:center;">
+          <div style="font-size:1.8rem;">${a.icon}</div>
+          <div style="font-weight:700; font-size:0.85rem; margin-top:8px;">${a.label}</div>
+        </div>`;
+      }).join("");
+    } else {
+      achGrid.innerHTML = `<p class="text-faint" style="grid-column: 1 / -1;">No badges yet — first tap at a station starts the record.</p>`;
+    }
+
+    // Participation timeline
+    const timeline = document.getElementById("mu-timeline");
+    if (member.achievements.length) {
+      timeline.innerHTML = member.achievements.map((k) => {
+        const act = MU_DATA.activity.find((x) => x.memberId === member.id && x.achievement === k);
+        return muRenderAchievement(k, { sub: act ? act.time : "Earlier this season" });
+      }).join("");
+    } else {
+      timeline.innerHTML = `<p class="text-faint">Nothing logged yet.</p>`;
+    }
+  }
+
+  // Station → achievement rule mapping, mirroring the achievement engine:
+  // a tap at a matching station logs participation and unlocks the rule's badge.
+  const STATION_RULES = [
+    { match: "5KM Race Finish",   achievement: "finisher-5k" },
+    { match: "Workshop Check-in", achievement: "workshop" },
+    { match: "Committee Desk",    achievement: "active-member" },
+    { match: "Pitch Day Entry",   achievement: "champion" },
+  ];
+
+  // NFC tap simulation
+  const stationSelect = document.getElementById("mu-station-select");
+  const toast = document.getElementById("mu-log-toast");
+  const toastText = document.getElementById("mu-log-text");
+
+  document.getElementById("mu-tap-btn").addEventListener("click", () => {
+    const target = document.getElementById("mu-tap-target");
+    target.classList.remove("is-tapping");
+    void target.offsetWidth;
+    target.classList.add("is-tapping");
+
+    const station = stationSelect.value;
+    const rule = STATION_RULES.find((r) => station.startsWith(r.match));
+
+    // Participation is logged against the member.
+    MU_DATA.activity.unshift({
+      memberId: member.id,
+      text: "unlocked",
+      achievement: rule ? rule.achievement : "active-member",
+      time: "Just now",
+    });
+
+    // Achievement rule check — unlock if the badge isn't held yet.
+    let unlocked = false;
+    if (rule && !member.achievements.includes(rule.achievement)) {
+      member.achievements.push(rule.achievement);
+      unlocked = true;
+    }
+
+    MU_DATA.save();
+    renderProfile();
+
+    const stationName = station.split(" — ")[0];
+    toastText.textContent = unlocked
+      ? `${stationName} logged · ${MU_DATA.achievements[rule.achievement].label} unlocked`
+      : `Logged at ${stationName} · just now`;
+    toast.classList.remove("show");
+    void toast.offsetWidth;
+    setTimeout(() => toast.classList.add("show"), 250);
+  });
+
+  renderProfile();
+</script>
+</body>
+</html>

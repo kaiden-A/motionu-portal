@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Management · Motion-U Portals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .assign-row { display: none; background: var(--ink-soft); }
+  .assign-row.is-open { display: table-row; }
+  .assign-row td { padding: 18px 16px; }
+  .assign-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .assign-form select { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 9px 12px; color: var(--text); min-width: 220px; }
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  .table-scroll .data-table { min-width: 760px; }
+  .session-note { font-size: 0.78rem; color: var(--text-faint); }
+</style>
+</head>
+<body>
+
+<div id="mu-header"></div>
+
+<section class="section" style="padding-bottom:32px;">
+  <div class="wrap">
+    <span class="eyebrow">Admin</span>
+    <h1 class="h-xl mt-16 text-anim" data-text-fx="soft-blur-in">Card management</h1>
+    <p class="lede mt-16">Ten physical cards, reassignable at any time. The card never belongs to a person — the assignment does.</p>
+  </div>
+</section>
+
+<section class="section--tight" style="padding-top:0;">
+  <div class="wrap">
+    <div class="grid grid-3" style="margin-bottom:32px;">
+      <div class="stat-card"><div class="stat-num" id="mu-stat-active">–</div><div class="stat-label">Cards assigned</div></div>
+      <div class="stat-card"><div class="stat-num" id="mu-stat-unassigned">–</div><div class="stat-label">Unassigned, ready to hand out</div></div>
+      <div class="stat-card"><div class="stat-num" id="mu-stat-total">–</div><div class="stat-label">Total cards in circulation</div></div>
+    </div>
+
+    <div class="flex justify-between items-center" style="margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+      <p class="session-note">Reassignments and new cards are saved to this browser and survive reloads — connect a backend to sync across devices.</p>
+      <button class="btn btn-ghost btn-sm" id="mu-add-card">+ Register new card</button>
+      <button class="btn btn-ghost btn-sm" id="mu-reset-data">Reset demo data</button>
+    </div>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Card</th>
+            <th>UID</th>
+            <th>Assigned to</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Last tap</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="mu-card-rows"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div id="mu-footer"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="animate.js"></script>
+<script>
+  muInitChrome("cards.html");
+
+  function refreshStats() {
+    const assigned = MU_DATA.cards.filter((c) => c.assignedTo).length;
+    document.getElementById("mu-stat-active").textContent = assigned;
+    document.getElementById("mu-stat-unassigned").textContent = MU_DATA.cards.length - assigned;
+    document.getElementById("mu-stat-total").textContent = MU_DATA.cards.length;
+  }
+
+  function memberOptionsHTML(currentId) {
+    const unassignedOrCurrent = MU_DATA.members.filter((m) => !m.cardId || m.cardId === currentId);
+    return `<option value="">— Unassign —</option>` + unassignedOrCurrent.map(
+      (m) => `<option value="${m.id}" ${m.cardId === currentId ? "selected" : ""}>${m.name} · ${MU_DATA.deptByKey(m.dept).short}</option>`
+    ).join("");
+  }
+
+  function renderRows() {
+    const tbody = document.getElementById("mu-card-rows");
+    tbody.innerHTML = MU_DATA.cards.map((c) => {
+      const member = MU_DATA.memberByCardId(c.cardId);
+      const dept = member ? MU_DATA.deptByKey(member.dept) : null;
+      return `
+      <tr>
+        <td class="mono">${c.cardId}</td>
+        <td class="uid-tag">${c.uid}</td>
+        <td>
+          ${member
+            ? `<div class="flex items-center gap-8"><div class="mini-avatar" data-dept="${member.dept}">${member.initials}</div> ${member.name}</div>`
+            : `<span class="text-faint">— none —</span>`}
+        </td>
+        <td>${dept ? `<span class="dept-tag" data-dept="${dept.key}">${dept.short}</span>` : `<span class="text-faint">—</span>`}</td>
+        <td>${member ? `<span class="status-pill active">Active</span>` : `<span class="status-pill unassigned">Unassigned</span>`}</td>
+        <td class="text-dim" style="font-size:0.82rem;">${c.lastTap}</td>
+        <td><button class="btn btn-ghost btn-sm mu-manage-btn" data-card="${c.cardId}">Manage</button></td>
+      </tr>
+      <tr class="assign-row" data-row-for="${c.cardId}">
+        <td colspan="7">
+          <div class="assign-form">
+            <span class="mono text-faint" style="font-size:0.78rem;">Reassign ${c.cardId} →</span>
+            <select data-card-select="${c.cardId}">${memberOptionsHTML(c.cardId)}</select>
+            <button class="btn btn-primary btn-sm mu-save-btn" data-card="${c.cardId}">Save</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join("");
+
+    document.querySelectorAll(".mu-manage-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const row = document.querySelector(`.assign-row[data-row-for="${btn.dataset.card}"]`);
+        document.querySelectorAll(".assign-row").forEach((r) => { if (r !== row) r.classList.remove("is-open"); });
+        row.classList.toggle("is-open");
+      });
+    });
+
+    document.querySelectorAll(".mu-save-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const cardId = btn.dataset.card;
+        const select = document.querySelector(`[data-card-select="${cardId}"]`);
+        const newMemberId = select.value;
+
+        // Clear this card off any member currently holding it.
+        const prevHolder = MU_DATA.memberByCardId(cardId);
+        if (prevHolder) prevHolder.cardId = null;
+
+        if (newMemberId) {
+          const newMember = MU_DATA.memberById(newMemberId);
+          // Free the new member from any other card first (one card per member).
+          if (newMember.cardId) {
+            const otherCard = MU_DATA.cardById(newMember.cardId);
+            if (otherCard) otherCard.assignedTo = null;
+          }
+          newMember.cardId = cardId;
+          MU_DATA.cardById(cardId).assignedTo = newMemberId;
+        } else {
+          MU_DATA.cardById(cardId).assignedTo = null;
+        }
+
+        renderRows();
+        refreshStats();
+        MU_DATA.save();
+      });
+    });
+  }
+
+  document.getElementById("mu-add-card").addEventListener("click", () => {
+    const nextNum = MU_DATA.cards.length + 1;
+    const cardId = `CARD-${String(nextNum).padStart(3, "0")}`;
+    const uid = Array.from({ length: 6 }, () => Math.floor(Math.random() * 256).toString(16).padStart(2, "0").toUpperCase()).join(":");
+    MU_DATA.cards.push({ cardId, uid, assignedTo: null, lastTap: "—" });
+    renderRows();
+    refreshStats();
+    MU_DATA.save();
+  });
+
+  document.getElementById("mu-reset-data").addEventListener("click", () => {
+    if (confirm("Re-seed all demo data? Card assignments, new cards, and logged taps will be lost.")) {
+      MU_DATA.reset();
+    }
+  });
+
+  refreshStats();
+  renderRows();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "motionu-portal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Motion-U Portals — card-based member portal (Next.js client + FastAPI server)",
+  "scripts": {
+    "start": "npm --prefix client install && cd server && uv sync && uv run alembic upgrade head && uv run python -m app.seed",
+    "dev": "concurrently -k -n server,client -c blue,green \"cd server && uv run uvicorn app.main:app --port 8000\" \"npm --prefix client run dev\"",
+    "build": "npm --prefix client run build",
+    "lint": "npm --prefix client run lint",
+    "seed": "cd server && uv run python -m app.seed",
+    "migrate": "cd server && uv run alembic upgrade head"
+  },
+  "devDependencies": {
+    "concurrently": "^9"
+  }
+}
