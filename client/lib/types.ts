@@ -9,9 +9,14 @@ export interface MemberPublic {
   initials: string
   dept?: string | null
   role?: string | null
+  roles: string[]
   achievements: string[]
   member_since?: string | null
   department?: Department | null
+}
+
+export interface MemberDirectoryItem extends MemberPublic {
+  zitadel_sub?: string | null
 }
 
 export interface CardPublic {
@@ -39,7 +44,58 @@ export interface MemberMe {
   initials: string
   dept?: string | null
   role?: string | null
+  roles: string[]
   is_admin: boolean
   achievements: string[]
   card?: CardPublic | null
+}
+
+export interface AppPublic {
+  app_id: string
+  name: string
+  desc?: string | null
+  category: string
+  dept?: string | null
+  icon: string
+  url?: string | null
+  enabled: boolean
+}
+
+export interface AppCreate {
+  app_id: string
+  name: string
+  desc?: string | null
+  category: string
+  dept?: string | null
+  icon: string
+  url?: string | null
+  enabled: boolean
+}
+
+export interface AppUpdate {
+  name?: string
+  desc?: string | null
+  category?: string
+  dept?: string | null
+  icon?: string
+  url?: string | null
+  enabled?: boolean
+}
+
+export const DEPARTMENTS: Department[] = [
+  { key: 'mainboard', name: 'Mainboards', short: 'Mainboard' },
+  { key: 'techops', name: 'Technical Operations', short: 'Tech Ops' },
+  { key: 'multimedia', name: 'Multimedia & Communications', short: 'Multimedia' },
+  { key: 'entrepreneur', name: 'Entrepreneurship', short: 'Entrepreneur.' },
+  { key: 'internal', name: 'Internal Affairs', short: 'Internal' },
+]
+
+export const ROLE_SHORT: Record<string, string> = {
+  member: 'Member',
+  mainboards: 'Mainboards',
+  techops: 'Tech Ops',
+  mulcom: 'Multimedia',
+  Inter: 'Internal',
+  entrep: 'Entrepreneur.',
+  super_admin: 'Admin',
 }

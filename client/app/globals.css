@@ -288,6 +288,19 @@ body.has-sidebar { padding-left: 260px; }
 [data-dept="entrepreneur"]  { --dept-color: var(--dept-entrepreneur); }
 [data-dept="internal"]      { --dept-color: var(--dept-internal); }
 
+/* ---- Role chips --------------------------------------------------------- */
+.role-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.role-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 3px 9px;
+}
+.role-chip.is-admin { color: var(--royal); border-color: var(--royal-dim); }
+.role-chip::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--dept-color, var(--text-faint)); }
+
 /* ---- Card (generic surface) --------------------------------------------------- */
 .panel {
   background: var(--surface);

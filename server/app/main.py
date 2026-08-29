@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import cards_router, members_router
+from app.routers import apps_router, cards_router, members_router
 
 app = FastAPI(title="Motion-U Portal API", version="0.1.0")
 
@@ -16,6 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(apps_router.router)
 app.include_router(cards_router.router)
 app.include_router(members_router.router)
 

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/sidebar'
-import { IdBadge, Achievement, StatusPill, DeptTag } from '@/components/badge'
+import { IdBadge, Achievement, StatusPill, DeptTag, RoleChips } from '@/components/badge'
 import { backendFetch, BackendError } from '@/lib/backend'
 import { getAccessToken } from '@/lib/backend'
 import type { MemberMe } from '@/lib/types'
@@ -85,6 +85,16 @@ export default async function ProfilePage() {
                     : 'This season'}
                 </div>
               </div>
+            </div>
+
+            <div className="panel mt-16">
+              <span className="eyebrow">Roles</span>
+              <RoleChips roles={me.roles} />
+              {!me.roles?.length && (
+                <p className="text-faint" style={{ fontSize: '0.82rem', marginTop: 8 }}>
+                  No Zitadel roles assigned yet.
+                </p>
+              )}
             </div>
 
             <div className="mt-32">

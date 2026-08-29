@@ -44,6 +44,7 @@ def _to_public(db: Session, card: Card) -> CardPublic:
                 "initials": member.initials,
                 "dept": member.dept,
                 "role": member.role,
+                "roles": member.roles or [],
                 "achievements": member.achievements or [],
                 "member_since": member.member_since.isoformat() if member.member_since else None,
                 "department": _department(db, member.dept),

@@ -8,7 +8,9 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isProtectedRoute =
-    pathname.startsWith('/profile') || pathname.startsWith('/cards')
+    pathname.startsWith('/profile') ||
+    pathname.startsWith('/cards') ||
+    pathname.startsWith('/members')
   const isLoginRoute = pathname === '/login'
 
   if (isProtectedRoute && !session) {
@@ -23,5 +25,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/profile/:path*', '/cards/:path*', '/login'],
+  matcher: ['/profile/:path*', '/cards/:path*', '/members/:path*', '/login'],
 }

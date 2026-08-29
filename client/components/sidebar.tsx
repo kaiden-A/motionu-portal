@@ -7,6 +7,8 @@ import type { MemberMe } from '@/lib/types'
 
 const NAV_LINKS = [
   { href: '/profile', label: 'Profile', icon: 'fa-id-card' },
+  { href: '/members', label: 'Members', icon: 'fa-users' },
+  { href: '/apps', label: 'Apps', icon: 'fa-grip' },
   { href: '/cards', label: 'Cards', icon: 'fa-table-columns', adminOnly: true },
 ]
 

@@ -104,13 +104,16 @@ def get_admin_member(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     member: Member = Depends(get_current_member),
 ) -> Member:
-    """Card assignment requires one of the admin roles on the access token
-    (super_admin, mainboards, Inter) — with the DB is_admin flag as fallback."""
-    if not member.is_admin:
+    """Card/app management requires one of the admin roles (super_admin,
+    mainboards, Inter) — from the member's synced Zitadel roles, the access
+    token, or the DB is_admin flag."""
+    if member.is_admin or bool(set(member.roles or []) & ADMIN_ROLES):
+        return member
+    if credentials:
         payload = _verify_access_token(credentials.credentials)
-        if not has_admin_role(payload):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Admin role (super_admin, mainboards, Inter) required",
-            )
-    return member
+        if has_admin_role(payload):
+            return member
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Admin role (super_admin, mainboards, Inter) required",
+    )

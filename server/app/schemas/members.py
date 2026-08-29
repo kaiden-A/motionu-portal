@@ -18,9 +18,14 @@ class MemberPublic(BaseModel):
     initials: str
     dept: str | None = None
     role: str | None = None
+    roles: list[str] = []
     achievements: list[str] = []
     member_since: str | None = None
     department: DepartmentPublic | None = None
+
+
+class MemberDirectoryItem(MemberPublic):
+    zitadel_sub: str | None = None
 
 
 class MemberMe(BaseModel):
@@ -31,6 +36,7 @@ class MemberMe(BaseModel):
     initials: str
     dept: str | None = None
     role: str | None = None
+    roles: list[str] = []
     is_admin: bool = False
     achievements: list[str] = []
     card: "CardPublic | None" = None

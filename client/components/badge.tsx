@@ -1,10 +1,37 @@
-import type { MemberPublic } from '@/lib/types'
+import { ROLE_SHORT, type MemberPublic } from '@/lib/types'
 
 const NFC_ICON = (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
     <path d="M4 7v10M8 9v6M12 6v12M16 10v4M20 8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
 )
+
+const ROLE_DEPT_KEY: Record<string, string> = {
+  mainboards: 'mainboard',
+  techops: 'techops',
+  mulcom: 'multimedia',
+  Inter: 'internal',
+  entrep: 'entrepreneur',
+}
+
+export function RoleChips({ roles, showMember = true }: { roles?: string[]; showMember?: boolean }) {
+  if (!roles?.length) return null
+  const visible = showMember ? roles : roles.filter((r) => r !== 'member')
+  if (!visible.length) return null
+  return (
+    <div className="role-chips">
+      {visible.map((r) => (
+        <span
+          key={r}
+          className={`role-chip ${r === 'super_admin' ? 'is-admin' : ''}`}
+          data-dept={ROLE_DEPT_KEY[r] ?? ''}
+        >
+          {ROLE_SHORT[r] ?? r}
+        </span>
+      ))}
+    </div>
+  )
+}
 
 export function IdBadge({
   member,
@@ -35,6 +62,7 @@ export function IdBadge({
       <div className="id-badge__photo">{member.initials || 'MU'}</div>
       <div className="id-badge__name">{member.name}</div>
       <div className="id-badge__role">{member.role || 'Member'}</div>
+      <RoleChips roles={member.roles} />
       <div className="id-badge__footer">
         <span className="id-badge__uid">UID · {uid ?? '—'}</span>
         <span className="id-badge__nfc">{NFC_ICON}</span>
