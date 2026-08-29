@@ -1,8 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { IdBadge, RoleChips } from '@/components/badge'
-import { DEPARTMENTS, type MemberDirectoryItem } from '@/lib/types'
+import { ROLE_SHORT, DEPARTMENTS, type MemberDirectoryItem } from '@/lib/types'
+
+const ROLE_DEPT_KEY: Record<string, string> = {
+  mainboards: 'mainboard',
+  techops: 'techops',
+  mulcom: 'multimedia',
+  Inter: 'internal',
+  entrep: 'entrepreneur',
+}
 
 export function MembersGrid({ members }: { members: MemberDirectoryItem[] }) {
   const [query, setQuery] = useState('')
@@ -42,13 +49,36 @@ export function MembersGrid({ members }: { members: MemberDirectoryItem[] }) {
         </div>
       </div>
 
-      <div className="grid grid-4" id="mu-member-grid">
-        {filtered.map((m) => (
-          <div key={m.zitadel_sub ?? m.name} className="panel">
-            <IdBadge member={m} size="sm" deptKey={m.dept} />
-            <RoleChips roles={m.roles} />
-          </div>
-        ))}
+      <div className="member-list" style={{ gap: 10 }}>
+        {filtered.map((m) => {
+          const roles = (m.roles || []).filter((r) => r !== 'member')
+          return (
+            <div key={m.zitadel_sub ?? m.name} className="member-row" data-dept={m.dept ?? ''}>
+              <div className="member-row__avatar">{m.initials}</div>
+              <div className="member-row__body">
+                <div className="member-row__name">{m.name}</div>
+                <div className="member-row__roles">
+                  {roles.length ? (
+                    roles.map((r) => (
+                      <span key={r} className={`role-chip ${r === 'super_admin' ? 'is-admin' : ''}`} data-dept={ROLE_DEPT_KEY[r] ?? ''}>
+                        {ROLE_SHORT[r] ?? r}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="role-chip">Member</span>
+                  )}
+                </div>
+              </div>
+              <div className="member-row__side">
+                {m.dept && (
+                  <span className="dept-tag" data-dept={m.dept}>
+                    {m.department?.short ?? m.dept}
+                  </span>
+                )}
+              </div>
+            </div>
+          )
+        })}
       </div>
       {!filtered.length && (
         <p className="text-faint mt-32">No members match that search.</p>

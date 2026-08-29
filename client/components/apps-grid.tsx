@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { AppsManageModal } from '@/components/apps-manage-modal'
 import { DEPARTMENTS, type AppPublic } from '@/lib/types'
 
 const ICONS: Record<string, string> = {
@@ -27,6 +28,7 @@ export function AppIcon({ icon }: { icon: string }) {
 export function AppsGrid({ apps, admin = false }: { apps: AppPublic[]; admin?: boolean }) {
   const [cat, setCat] = useState('All')
   const [dept, setDept] = useState('all')
+  const [manageOpen, setManageOpen] = useState(false)
 
   const filtered = apps.filter((a) => {
     const matchCat = cat === 'All' || a.category === cat
@@ -102,14 +104,17 @@ export function AppsGrid({ apps, admin = false }: { apps: AppPublic[]; admin?: b
         })}
       </div>
       {!filtered.length && <p className="text-faint mt-32">No apps match that filter.</p>}
+
       {admin && (
         <div className="mt-24">
-          <a href="/apps/manage" className="btn btn-ghost btn-sm">
+          <button className="btn btn-ghost btn-sm" onClick={() => setManageOpen(true)}>
             <i className="fa-solid fa-gear" />
             Manage apps
-          </a>
+          </button>
         </div>
       )}
+
+      {manageOpen && <AppsManageModal apps={apps} onClose={() => setManageOpen(false)} />}
     </>
   )
 }

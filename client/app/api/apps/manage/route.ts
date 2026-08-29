@@ -32,11 +32,11 @@ export async function POST(request: Request) {
       body: {
         app_id: body.app_id,
         name: body.name,
-        desc: body.desc ?? '',
+        desc: body.desc ?? null,
         category: body.category ?? 'Internal',
         dept: body.dept ?? null,
         icon: body.icon ?? 'grid',
-        url: body.url ?? '',
+        url: body.url ?? null,
         enabled: body.enabled ?? true,
       },
     })

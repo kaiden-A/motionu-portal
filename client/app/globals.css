@@ -301,6 +301,78 @@ body.has-sidebar { padding-left: 260px; }
 .role-chip.is-admin { color: var(--royal); border-color: var(--royal-dim); }
 .role-chip::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--dept-color, var(--text-faint)); }
 
+/* ---- Member directory rows --------------------------------------------------- */
+.member-list { display: flex; flex-direction: column; }
+.member-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s var(--ease-soft), background 0.2s var(--ease-soft);
+}
+.member-row:hover { border-color: var(--text-dim); background: var(--surface-2); }
+.member-row__avatar {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  display: grid; place-items: center;
+  font-family: var(--font-mono); font-weight: 700; font-size: 0.82rem;
+  color: var(--dept-color, var(--royal));
+  flex-shrink: 0;
+}
+.member-row__body { flex-grow: 1; min-width: 0; }
+.member-row__name { font-weight: 700; font-size: 0.95rem; }
+.member-row__roles { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.member-row__roles .role-chip { margin: 0; }
+.member-row__side { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.member-row__uid { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-faint); }
+@media (max-width: 640px) {
+  .member-row { flex-wrap: wrap; }
+  .member-row__side { width: 100%; justify-content: flex-end; }
+}
+
+/* ---- Modal ------------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 70;
+  display: grid; place-items: center;
+  background: rgba(8, 10, 14, 0.66);
+  padding: 24px;
+  animation: modalFade 0.2s var(--ease-soft);
+}
+.modal {
+  width: 100%; max-width: 720px; max-height: 86vh;
+  display: flex; flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  animation: modalRise 0.25s var(--ease-soft);
+}
+.modal__head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+}
+.modal__body { padding: 24px; overflow-y: auto; }
+.modal__close {
+  width: 34px; height: 34px; border-radius: var(--radius-sm);
+  display: grid; place-items: center;
+  color: var(--text-faint);
+  border: 1px solid var(--line);
+  transition: color 0.2s var(--ease-soft), border-color 0.2s var(--ease-soft);
+}
+.modal__close:hover { color: var(--coral); border-color: var(--coral-dim); }
+.modal .assign-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal .assign-form .form-full { grid-column: 1 / -1; }
+.modal .assign-form input,
+.modal .assign-form select { width: 100%; min-width: 0; }
+.modal .assign-form .form-actions { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+@keyframes modalFade { from { opacity: 0; } }
+@keyframes modalRise { from { opacity: 0; transform: translateY(12px); } }
+
 /* ---- Card (generic surface) --------------------------------------------------- */
 .panel {
   background: var(--surface);

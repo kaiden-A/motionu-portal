@@ -1,11 +1,12 @@
-"""Seed the database with departments, demo cards, the app catalog, and
-member roles synced from Zitadel role grants.
+"""Seed the database with departments, demo cards, and member roles synced
+from Zitadel role grants. The app catalog starts empty — apps are added by
+admins through the portal.
 
 Usage: uv run python -m app.seed
 """
 
 from app.database import SessionLocal
-from app.models import App, Card, Department, Member
+from app.models import Card, Department, Member
 from app.services.zitadel_service import (
     list_org_role_grants,
     primary_dept,
@@ -38,14 +39,6 @@ DEMO_CARDS = [
     {"card_id": "CARD-010", "uid": "04:9C:E1:55:80:F0"},
 ]
 
-# Real OIDC apps registered in the "Motion-U Internal Apps" Zitadel project.
-APPS = [
-    {"app_id": "home-portals", "name": "Home Portals", "desc": "The Motion-U member portal — your card, profile, and directory.", "category": "Internal", "dept": "mainboard", "icon": "grid", "url": "http://localhost:3000", "enabled": True, "sort": 0},
-    {"app_id": "neuradamin", "name": "Neuradamin", "desc": "Internal admin console.", "category": "Internal", "dept": "techops", "icon": "grid", "url": "https://neuradmin.vercel.app", "enabled": True, "sort": 1},
-    {"app_id": "neura", "name": "Neura", "desc": "Internal intelligence app.", "category": "Internal", "dept": "techops", "icon": "activity", "url": "http://localhost:3000", "enabled": False, "sort": 2},
-    {"app_id": "pinpoint", "name": "Pinpoint", "desc": "Motion-U pinpoint app.", "category": "Internal", "dept": "multimedia", "icon": "camera", "url": "https://motionu-pinpoint.vercel.app", "enabled": True, "sort": 3},
-]
-
 
 def _seed_static(db) -> None:
     for d in DEPARTMENTS:
@@ -54,9 +47,6 @@ def _seed_static(db) -> None:
     for c in DEMO_CARDS:
         if not db.query(Card).filter(Card.card_id == c["card_id"]).first():
             db.add(Card(**c))
-    for a in APPS:
-        if not db.query(App).filter(App.app_id == a["app_id"]).first():
-            db.add(App(**a))
     db.commit()
 
 
@@ -85,8 +75,7 @@ def seed() -> None:
     try:
         _seed_static(db)
         updated = _sync_roles(db)
-        apps = db.query(App).count()
-        print(f"Seeded {len(DEPARTMENTS)} departments, {len(DEMO_CARDS)} cards, {apps} apps")
+        print(f"Seeded {len(DEPARTMENTS)} departments, {len(DEMO_CARDS)} cards")
         print(f"Synced roles for {updated} members from Zitadel grants")
     finally:
         db.close()
