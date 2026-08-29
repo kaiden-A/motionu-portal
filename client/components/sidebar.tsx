@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { ThemeToggle } from '@/components/theme-toggle'
 import type { MemberMe } from '@/lib/types'
 
 const NAV_LINKS = [
@@ -69,6 +70,7 @@ export function Sidebar({ me }: { me: MemberMe }) {
             </span>
             <i className="fa-solid fa-chevron-right sidebar-user__chev" />
           </Link>
+          <ThemeToggle />
           <a
             className="sidebar-logout"
             href="/api/auth/logout"

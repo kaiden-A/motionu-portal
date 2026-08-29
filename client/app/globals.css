@@ -49,6 +49,36 @@
 
 /* ---- Base ------------------------------------------------------------------ */
 @layer base {
+  :root { color-scheme: dark; }
+
+  /* Light theme — overrides the design tokens via the `.light` class on <html>.
+     All component classes use var(--color-*), so they switch automatically. */
+  .light {
+    color-scheme: light;
+
+    --color-ink: #f4f6f1;
+    --color-ink-soft: #eef1f6;
+    --color-surface: #ffffff;
+    --color-surface-2: #f2f4f8;
+    --color-surface-3: #e6eaf0;
+    --color-line: #d9dee8;
+    --color-line-soft: rgba(16, 19, 26, 0.08);
+
+    --color-text: #10131a;
+    --color-dim: #5a6372;
+    --color-faint: #8b94a3;
+
+    --color-royal: #3d6bff;
+    --color-royal-ink: #ffffff;
+    --color-royal-dim: #2b4fd6;
+    --color-coral: #ff5a3c;
+    --color-coral-dim: #c9432a;
+
+    --color-sheen: rgba(16, 19, 26, 0.08);
+  }
+
+  :root { --color-sheen: rgba(244, 246, 241, 0.14); }
+
   *, *::before, *::after { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
@@ -329,7 +359,7 @@
   .id-badge__sheen {
     @apply absolute pointer-events-none z-[2];
     inset: -40% -20%;
-    background: linear-gradient(75deg, transparent 40%, rgba(244,246,241,0.14) 48%, rgba(244,246,241,0.28) 50%, rgba(244,246,241,0.14) 52%, transparent 60%);
+    background: linear-gradient(75deg, transparent 40%, var(--color-sheen) 48%, var(--color-sheen) 50%, var(--color-sheen) 52%, transparent 60%);
     transform: translateX(-120%);
   }
   .id-badge.sheen-play .id-badge__sheen { animation: badgeSheen 2.6s var(--ease-soft) 0.4s 1; }
@@ -367,6 +397,58 @@
   .id-badge--sm .id-badge__name { @apply text-[1.1rem]; }
   .id-badge--sm .id-badge__punch { display: none; }
   .id-badge--sm .id-badge__row-top { @apply mb-3; }
+
+  /* Lanyard card (public card page) — horizontal CR80-style ID card */
+  .lanyard-card {
+    @apply relative w-[340px] rounded-[20px] overflow-hidden text-left;
+    background: linear-gradient(155deg, var(--color-surface-2), var(--color-surface));
+    border: 1px solid var(--color-line);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    isolation: isolate;
+  }
+  .lanyard-card::before {
+    content: "";
+    @apply absolute top-0 left-0 right-0 h-[6px];
+    background: var(--dept-color, var(--color-royal));
+  }
+  .lanyard-card__punch {
+    @apply absolute top-[13px] left-1/2 -translate-x-1/2 w-[30px] h-[8px] rounded-full z-[2];
+    background: var(--color-ink);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+  .lanyard-card__body { @apply p-5 pt-9; }
+  .lanyard-card__row-top { @apply flex items-center justify-between mb-4; }
+  .lanyard-card__org { @apply font-display font-extrabold text-[0.9rem] tracking-[0.03em] uppercase; }
+  .lanyard-card__type {
+    @apply font-mono text-[0.58rem] uppercase tracking-[0.12em] border border-line px-2 py-[3px] rounded-full;
+    color: var(--dept-color, var(--color-royal));
+  }
+  .lanyard-card__main { @apply flex items-center gap-4; }
+  .lanyard-card__photo {
+    @apply w-[86px] h-[86px] rounded-[16px] shrink-0 grid place-items-center font-display font-extrabold text-[1.7rem] border;
+    background: var(--color-surface-3);
+    border-color: var(--color-line);
+    color: var(--dept-color, var(--color-royal));
+  }
+  .lanyard-card__info { @apply min-w-0; }
+  .lanyard-card__name { @apply font-display font-extrabold text-[1.35rem] uppercase leading-[1.02]; }
+  .lanyard-card__role { @apply mt-1 text-[0.8rem] text-dim; }
+  .lanyard-card__dept { @apply mt-2; }
+  .lanyard-card__footer {
+    @apply mt-5 pt-3 border-t border-dashed border-line flex items-center justify-between;
+  }
+  .lanyard-card__uid { @apply font-mono text-[0.66rem] text-faint; }
+  .lanyard-card__nfc { @apply flex items-center gap-1 text-faint; }
+
+  /* Theme toggle */
+  .theme-toggle {
+    @apply w-[38px] h-[38px] rounded-xl grid place-items-center text-faint border border-line shrink-0;
+    transition: color 0.2s var(--ease-soft), border-color 0.2s var(--ease-soft);
+  }
+  .theme-toggle:hover { @apply text-royal border-royal-dim; }
+  .theme-toggle--float {
+    @apply fixed top-4 right-4 z-[80] w-10 h-10 rounded-xl grid place-items-center border border-line bg-surface text-dim shadow-lg;
+  }
 
   /* Status / table */
   .status-pill {

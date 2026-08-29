@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ClaimButton } from '@/components/claim-button'
-import { IdBadge, Achievement, StatusPill, DeptTag } from '@/components/badge'
+import { Achievement, StatusPill, DeptTag } from '@/components/badge'
+import { LanyardCard } from '@/components/lanyard-card'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { backendFetch } from '@/lib/backend'
 import { getSession } from '@/lib/session'
 import type { CardPublic } from '@/lib/types'
@@ -29,6 +31,7 @@ export default async function PublicCardPage({
 
   return (
     <body className="public-body">
+      <ThemeToggle floating />
       <main className="public-shell">
         <div className="auth-brand" style={{ justifyContent: 'center' }}>
           <span className="brand-mark">M</span>
@@ -43,7 +46,7 @@ export default async function PublicCardPage({
 
           {card.assigned && card.member ? (
             <>
-              <IdBadge
+              <LanyardCard
                 member={card.member}
                 uid={card.uid}
                 tilt

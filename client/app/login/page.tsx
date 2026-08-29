@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export const metadata: Metadata = {
   title: 'Sign in · Motion-U Portals',
@@ -31,6 +32,7 @@ export default async function LoginPage({
 
   return (
     <body className="auth-body">
+      <ThemeToggle floating />
       <main className="auth-shell">
         <div className="auth-card">
           <div className="auth-brand">
