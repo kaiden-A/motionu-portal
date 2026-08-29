@@ -19,8 +19,8 @@ export default async function AppsPage() {
       <div className={`wrap ${me ? '' : ''}`} style={{ paddingTop: 56, paddingBottom: 64 }}>
         <section style={{ paddingBottom: 32 }}>
           <span className="eyebrow">Directory</span>
-          <h1 className="h-xl mt-16">Every Motion-U app, in one place</h1>
-          <p className="lede mt-16">
+          <h1 className="h-xl mt-4">Every Motion-U app, in one place</h1>
+          <p className="lede mt-4">
             Internal tools committees run day to day, and public apps every member can open.
           </p>
         </section>

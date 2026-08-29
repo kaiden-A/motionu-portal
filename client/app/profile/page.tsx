@@ -29,16 +29,16 @@ export default async function ProfilePage() {
       <div className="wrap" style={{ paddingTop: 56, paddingBottom: 64 }}>
         <section>
           <span className="eyebrow">Member profile</span>
-          <h1 className="h-xl mt-16">My credential</h1>
-          <p className="lede mt-16">
+          <h1 className="h-xl mt-4">My credential</h1>
+          <p className="lede mt-4">
             One card, every department, event, and achievement — yours.
           </p>
         </section>
 
-        <section style={{ marginTop: 40 }} className="grid grid-2">
+        <section style={{ marginTop: 40 }} className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="panel" style={{ alignSelf: 'start' }}>
             <span className="eyebrow">Digital card</span>
-            <div className="mt-16 flex" style={{ justifyContent: 'center' }}>
+            <div className="mt-4 flex" style={{ justifyContent: 'center' }}>
               <IdBadge
                 member={me}
                 uid={me.card?.uid ?? null}
@@ -46,11 +46,11 @@ export default async function ProfilePage() {
                 deptKey={me.dept}
               />
             </div>
-            <div className="mt-16" style={{ textAlign: 'center' }}>
+            <div className="mt-4" style={{ textAlign: 'center' }}>
               {me.card ? (
                 <>
                   <StatusPill assigned />
-                  <div className="uid-tag mt-8">{me.card.uid}</div>
+                  <div className="uid-tag mt-2">{me.card.uid}</div>
                 </>
               ) : (
                 <StatusPill assigned={false} />
@@ -59,12 +59,12 @@ export default async function ProfilePage() {
           </div>
 
           <div>
-            <div className="grid grid-2" style={{ gap: 16 }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{ gap: 16 }}>
               <div className="panel">
-                <span className="mono text-faint" style={{ fontSize: '0.68rem', textTransform: 'uppercase' }}>
+                <span className="font-mono text-faint" style={{ fontSize: '0.68rem', textTransform: 'uppercase' }}>
                   Card status
                 </span>
-                <div className="mt-8" style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <div className="mt-2" style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                   {me.card ? (
                     <>
                       <StatusPill assigned />
@@ -76,10 +76,10 @@ export default async function ProfilePage() {
                 </div>
               </div>
               <div className="panel">
-                <span className="mono text-faint" style={{ fontSize: '0.68rem', textTransform: 'uppercase' }}>
+                <span className="font-mono text-faint" style={{ fontSize: '0.68rem', textTransform: 'uppercase' }}>
                   Member since
                 </span>
-                <div className="mt-8 h-md" style={{ textTransform: 'none', fontFamily: 'var(--font-body)', fontWeight: 700 }}>
+                <div className="mt-2 h-md" style={{ textTransform: 'none', fontFamily: 'var(--font-body)', fontWeight: 700 }}>
                   {me.card?.member?.member_since
                     ? new Date(me.card.member.member_since).toLocaleDateString()
                     : 'This season'}
@@ -87,7 +87,7 @@ export default async function ProfilePage() {
               </div>
             </div>
 
-            <div className="panel mt-16">
+            <div className="panel mt-4">
               <span className="eyebrow">Roles</span>
               <RoleChips roles={me.roles} />
               {!me.roles?.length && (
@@ -97,9 +97,9 @@ export default async function ProfilePage() {
               )}
             </div>
 
-            <div className="mt-32">
+            <div className="mt-8">
               <span className="eyebrow">Badges earned</span>
-              <div className="flex mt-16" style={{ flexDirection: 'column', gap: 10 }}>
+              <div className="flex mt-4" style={{ flexDirection: 'column', gap: 10 }}>
                 {me.achievements.length ? (
                   me.achievements.map((a) => <Achievement key={a} label={a} />)
                 ) : (

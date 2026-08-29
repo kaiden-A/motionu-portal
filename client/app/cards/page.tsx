@@ -30,14 +30,14 @@ export default async function CardsPage() {
       <div className="wrap" style={{ paddingTop: 56, paddingBottom: 64 }}>
         <section style={{ paddingBottom: 32 }}>
           <span className="eyebrow">Admin</span>
-          <h1 className="h-xl mt-16">Card management</h1>
-          <p className="lede mt-16">
+          <h1 className="h-xl mt-4">Card management</h1>
+          <p className="lede mt-4">
             Cards are physical; the assignment is digital. Assign any card to a Zitadel
             member — the assignment syncs to the public card page instantly.
           </p>
         </section>
 
-        <div className="grid grid-3" style={{ marginBottom: 32 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" style={{ marginBottom: 32 }}>
           <div className="stat-card">
             <div className="stat-num">{assignedCount}</div>
             <div className="stat-label">Cards assigned</div>
@@ -52,7 +52,7 @@ export default async function CardsPage() {
           </div>
         </div>
 
-        <div className="flex justify-between items-center mb-16" style={{ flexWrap: 'wrap', gap: 12 }}>
+        <div className="flex justify-between items-center mb-4" style={{ flexWrap: 'wrap', gap: 12 }}>
           <p className="session-note">
             Assignments are saved to the database and sync across devices.
           </p>
@@ -74,11 +74,11 @@ export default async function CardsPage() {
             <tbody>
               {cards.map((c) => (
                 <tr key={c.card_id}>
-                  <td className="mono">{c.card_id}</td>
+                  <td className="font-mono">{c.card_id}</td>
                   <td className="uid-tag">{c.uid}</td>
                   <td>
                     {c.member ? (
-                      <div className="flex items-center gap-8">
+                      <div className="flex items-center gap-2">
                         <div
                           className="mini-avatar"
                           data-dept={c.member.dept ?? ''}

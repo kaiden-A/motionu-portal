@@ -37,7 +37,7 @@ export default async function PublicCardPage({
           </span>
         </div>
 
-        <div className="public-card-frame mt-24">
+        <div className="public-card-frame mt-6">
           <span className="eyebrow">Card · {card.card_id}</span>
           <div className="uid-tag">{card.uid}</div>
 

@@ -22,8 +22,8 @@ export default async function MembersPage() {
       <div className="wrap" style={{ paddingTop: 56, paddingBottom: 64 }}>
         <section style={{ paddingBottom: 32 }}>
           <span className="eyebrow">Directory</span>
-          <h1 className="h-xl mt-16">Every member, one directory</h1>
-          <p className="lede mt-16">
+          <h1 className="h-xl mt-4">Every member, one directory</h1>
+          <p className="lede mt-4">
             Search by name, or filter by department to see who carries which roles.
           </p>
         </section>

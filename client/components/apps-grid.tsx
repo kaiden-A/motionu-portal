@@ -64,7 +64,7 @@ export function AppsGrid({ apps, admin = false }: { apps: AppPublic[]; admin?: b
         </div>
       </div>
 
-      <div className="grid grid-3" id="mu-app-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="mu-app-grid">
         {filtered.map((app) => {
           const deptInfo = DEPARTMENTS.find((d) => d.key === app.dept)
           const href = app.url && app.url.startsWith('http') ? app.url : '#'
@@ -103,10 +103,10 @@ export function AppsGrid({ apps, admin = false }: { apps: AppPublic[]; admin?: b
           )
         })}
       </div>
-      {!filtered.length && <p className="text-faint mt-32">No apps match that filter.</p>}
+      {!filtered.length && <p className="text-faint mt-8">No apps match that filter.</p>}
 
       {admin && (
-        <div className="mt-24">
+        <div className="mt-6">
           <button className="btn btn-ghost btn-sm" onClick={() => setManageOpen(true)}>
             <i className="fa-solid fa-gear" />
             Manage apps

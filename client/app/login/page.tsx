@@ -39,7 +39,7 @@ export default async function LoginPage({
               Motion-U <span className="brand-sub">PORTALS</span>
             </span>
           </div>
-          <h1 className="h-lg mt-16">Sign in to your account</h1>
+          <h1 className="h-lg mt-4">Sign in to your account</h1>
           <p className="auth-sub">One card. Every department, event, and achievement.</p>
 
           <form className="auth-form">

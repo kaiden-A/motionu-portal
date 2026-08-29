@@ -81,7 +81,7 @@ export function MembersGrid({ members }: { members: MemberDirectoryItem[] }) {
         })}
       </div>
       {!filtered.length && (
-        <p className="text-faint mt-32">No members match that search.</p>
+        <p className="text-faint mt-8">No members match that search.</p>
       )}
     </>
   )

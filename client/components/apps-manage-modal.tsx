@@ -96,11 +96,11 @@ export function AppsManageModal({
           </button>
         </div>
         <div className="modal__body">
-          {error && <p className="auth-error mb-16">{error}</p>}
+          {error && <p className="auth-error mb-4">{error}</p>}
 
           {editing ? (
             <>
-              <h3 className="h-md mb-16">Edit app</h3>
+              <h3 className="h-md mb-4">Edit app</h3>
               <AppForm
                 initial={editing}
                 submitLabel={busy ? 'Saving…' : 'Save changes'}
@@ -125,13 +125,13 @@ export function AppsManageModal({
                     {apps.map((app) => (
                       <tr key={app.app_id}>
                         <td>
-                          <div className="flex items-center gap-8">
+                          <div className="flex items-center gap-2">
                             <div className="app-card__icon" style={{ width: 34, height: 34, borderRadius: 9 }}>
                               <AppIcon icon={app.icon} />
                             </div>
                             <div>
                               <div style={{ fontWeight: 700 }}>{app.name}</div>
-                              <div className="mono text-faint" style={{ fontSize: '0.7rem' }}>
+                              <div className="font-mono text-faint" style={{ fontSize: '0.7rem' }}>
                                 {app.app_id}
                               </div>
                             </div>
@@ -157,7 +157,7 @@ export function AppsManageModal({
                           </span>
                         </td>
                         <td>
-                          <div className="flex gap-8" style={{ flexWrap: 'wrap' }}>
+                          <div className="flex gap-2" style={{ flexWrap: 'wrap' }}>
                             <button
                               className="btn btn-ghost btn-sm"
                               onClick={() => setEditing({ ...EMPTY, ...app, dept: app.dept ?? '', desc: app.desc ?? '', url: app.url ?? '' })}
@@ -179,11 +179,11 @@ export function AppsManageModal({
               </div>
 
               {!apps.length && (
-                <p className="text-faint mt-16">No apps yet — add your first app below.</p>
+                <p className="text-faint mt-4">No apps yet — add your first app below.</p>
               )}
 
-              <div className="mt-24">
-                <h3 className="h-md mb-16">Add an app</h3>
+              <div className="mt-6">
+                <h3 className="h-md mb-4">Add an app</h3>
                 <AppForm
                   initial={EMPTY}
                   submitLabel={busy ? 'Saving…' : '+ Add app'}
@@ -246,7 +246,7 @@ function AppForm({
           <option key={i} value={i}>{i}</option>
         ))}
       </select>
-      <label className="flex items-center gap-8" style={{ fontSize: '0.8rem', alignItems: 'center' }}>
+      <label className="flex items-center gap-2" style={{ fontSize: '0.8rem', alignItems: 'center' }}>
         <input
           type="checkbox"
           checked={form.enabled}
