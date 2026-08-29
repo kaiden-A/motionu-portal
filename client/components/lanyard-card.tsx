@@ -39,31 +39,33 @@ export function LanyardCard({
 
         <div className="lanyard-card__main">
           <div className="lanyard-card__photo">{member.initials || 'MU'}</div>
-          <div className="lanyard-card__info">
-            <div className="lanyard-card__name">{member.name}</div>
-            <div className="lanyard-card__role">{member.role || 'Member'}</div>
-            {member.department && (
-              <div className="lanyard-card__dept">
-                <span className="dept-tag" data-dept={dept}>
-                  {member.department.short}
+          <div className="lanyard-card__name">{member.name}</div>
+          <div className="lanyard-card__role">{member.role || 'Member'}</div>
+          {member.department && (
+            <div className="lanyard-card__dept">
+              <span className="dept-tag" data-dept={dept}>
+                {member.department.short}
+              </span>
+            </div>
+          )}
+          {roles.length > 0 && (
+            <div className="lanyard-card__chips">
+              {roles.map((r) => (
+                <span
+                  key={r}
+                  className={`role-chip ${r === 'super_admin' ? 'is-admin' : ''}`}
+                  data-dept={ROLE_DEPT_KEY[r] ?? ''}
+                >
+                  {ROLE_SHORT[r] ?? r}
                 </span>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="lanyard-card__footer">
           <span className="lanyard-card__uid">UID · {uid ?? '—'}</span>
-          <span className="lanyard-card__nfc">
-            {roles.length ? (
-              roles.slice(0, 2).map((r) => (
-                <span key={r} className="role-chip" data-dept={ROLE_DEPT_KEY[r] ?? ''}>
-                  {ROLE_SHORT[r] ?? r}
-                </span>
-              ))
-            ) : null}
-            {NFC_ICON}
-          </span>
+          <span className="lanyard-card__nfc">{NFC_ICON}</span>
         </div>
       </div>
     </div>
