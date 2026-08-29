@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ClaimButton } from '@/components/claim-button'
-import { Achievement, StatusPill, DeptTag } from '@/components/badge'
+import { StatusPill, DeptTag } from '@/components/badge'
 import { LanyardCard } from '@/components/lanyard-card'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { backendFetch } from '@/lib/backend'
@@ -32,47 +32,23 @@ export default async function PublicCardPage({
   return (
     <body className="public-body">
       <ThemeToggle floating />
-      <main className="public-shell">
-        <div className="auth-brand" style={{ justifyContent: 'center' }}>
-          <span className="brand-mark">M</span>
-          <span className="auth-brand__name">
-            Motion-U <span className="brand-sub">PORTALS</span>
-          </span>
-        </div>
-
-        <div className="public-card-frame mt-6">
-          <span className="eyebrow">Card · {card.card_id}</span>
-          <div className="uid-tag">{card.uid}</div>
-
-          {card.assigned && card.member ? (
-            <>
-              <LanyardCard
-                member={card.member}
-                uid={card.uid}
-                tilt
-                deptKey={card.member.dept}
-              />
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <StatusPill assigned />
-                <DeptTag short={card.member.department?.short} />
-              </div>
-              <div className="flex" style={{ flexDirection: 'column', gap: 10, width: '100%' }}>
-                <span className="eyebrow" style={{ justifyContent: 'center' }}>
-                  Badges earned
-                </span>
-                {card.member.achievements.length ? (
-                  card.member.achievements.map((a) => (
-                    <Achievement key={a} label={a} />
-                  ))
-                ) : (
-                  <p className="text-faint" style={{ fontSize: '0.82rem' }}>
-                    No badges yet — this member&apos;s record is just starting.
-                  </p>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
+      <main className="public-shell flex flex-col items-center gap-6" style={{ justifyContent: 'center', minHeight: '100dvh' }}>
+        {card.assigned && card.member ? (
+          <>
+            <LanyardCard
+              member={card.member}
+              uid={card.uid}
+              deptKey={card.member.dept}
+            />
+            <div className="flex items-center gap-2">
+              <StatusPill assigned />
+              <DeptTag short={card.member.department?.short} />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="w-full flex flex-col items-center gap-4">
+              <span className="eyebrow">Card · {card.card_id}</span>
               <h1 className="h-lg" style={{ textTransform: 'none', lineHeight: 1.1 }}>
                 This card is unclaimed
               </h1>
@@ -91,9 +67,9 @@ export default async function PublicCardPage({
                   Sign in to claim
                 </a>
               )}
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </main>
     </body>
   )

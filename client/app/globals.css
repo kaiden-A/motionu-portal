@@ -398,9 +398,10 @@
   .id-badge--sm .id-badge__punch { display: none; }
   .id-badge--sm .id-badge__row-top { @apply mb-3; }
 
-  /* Lanyard card (public card page) — horizontal CR80-style ID card */
+  /* Lanyard card (public card page) — horizontal CR80-style ID card.
+     Stretches to fill the viewport width on phones; capped on larger screens. */
   .lanyard-card {
-    @apply relative w-[340px] rounded-[20px] overflow-hidden text-left;
+    @apply relative w-full max-w-[460px] rounded-[20px] overflow-hidden text-left;
     background: linear-gradient(155deg, var(--color-surface-2), var(--color-surface));
     border: 1px solid var(--color-line);
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
@@ -416,28 +417,28 @@
     background: var(--color-ink);
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
   }
-  .lanyard-card__body { @apply p-5 pt-9; }
+  .lanyard-card__body { @apply p-5 pt-9 sm:p-6 sm:pt-10; }
   .lanyard-card__row-top { @apply flex items-center justify-between mb-4; }
-  .lanyard-card__org { @apply font-display font-extrabold text-[0.9rem] tracking-[0.03em] uppercase; }
+  .lanyard-card__org { @apply font-display font-extrabold text-[0.95rem] sm:text-[1.05rem] tracking-[0.03em] uppercase; }
   .lanyard-card__type {
-    @apply font-mono text-[0.58rem] uppercase tracking-[0.12em] border border-line px-2 py-[3px] rounded-full;
+    @apply font-mono text-[0.6rem] uppercase tracking-[0.12em] border border-line px-2 py-[3px] rounded-full;
     color: var(--dept-color, var(--color-royal));
   }
-  .lanyard-card__main { @apply flex items-center gap-4; }
+  .lanyard-card__main { @apply flex items-center gap-4 sm:gap-5; }
   .lanyard-card__photo {
-    @apply w-[86px] h-[86px] rounded-[16px] shrink-0 grid place-items-center font-display font-extrabold text-[1.7rem] border;
+    @apply w-[92px] h-[92px] sm:w-[104px] sm:h-[104px] rounded-[16px] shrink-0 grid place-items-center font-display font-extrabold text-[1.8rem] sm:text-[2rem] border;
     background: var(--color-surface-3);
     border-color: var(--color-line);
     color: var(--dept-color, var(--color-royal));
   }
   .lanyard-card__info { @apply min-w-0; }
-  .lanyard-card__name { @apply font-display font-extrabold text-[1.35rem] uppercase leading-[1.02]; }
-  .lanyard-card__role { @apply mt-1 text-[0.8rem] text-dim; }
+  .lanyard-card__name { @apply font-display font-extrabold text-[1.45rem] sm:text-[1.6rem] uppercase leading-[1.02]; }
+  .lanyard-card__role { @apply mt-1 text-[0.85rem] sm:text-[0.9rem] text-dim; }
   .lanyard-card__dept { @apply mt-2; }
   .lanyard-card__footer {
     @apply mt-5 pt-3 border-t border-dashed border-line flex items-center justify-between;
   }
-  .lanyard-card__uid { @apply font-mono text-[0.66rem] text-faint; }
+  .lanyard-card__uid { @apply font-mono text-[0.7rem] sm:text-[0.74rem] text-faint; }
   .lanyard-card__nfc { @apply flex items-center gap-1 text-faint; }
 
   /* Theme toggle */
@@ -519,8 +520,8 @@
   }
 
   /* Public card page */
-  .public-body { @apply min-h-screen grid place-items-center p-[32px_24px]; }
-  .public-shell { @apply max-w-[480px] w-full text-center; }
+  .public-body { @apply min-h-screen grid place-items-center p-4 sm:p-8; }
+  .public-shell { @apply max-w-[520px] w-full text-center; }
   .public-card-frame {
     @apply bg-surface border border-line rounded-lg p-9 flex flex-col items-center gap-5;
   }

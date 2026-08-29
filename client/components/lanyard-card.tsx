@@ -17,23 +17,17 @@ const ROLE_DEPT_KEY: Record<string, string> = {
 export function LanyardCard({
   member,
   uid,
-  tilt = false,
   deptKey,
 }: {
   member: MemberPublic
   uid?: string | null
-  tilt?: boolean
   deptKey?: string | null
 }) {
   const dept = deptKey ?? member.dept ?? undefined
   const roles = (member.roles || []).filter((r) => r !== 'member')
 
   return (
-    <div
-      className={`lanyard-card ${tilt ? 'id-badge--tilt' : ''}`}
-      data-dept={dept ?? ''}
-      style={{ margin: '0 auto' }}
-    >
+    <div className="lanyard-card" data-dept={dept ?? ''}>
       <div className="lanyard-card__punch" />
       <div className="lanyard-card__body">
         <div className="lanyard-card__row-top">
