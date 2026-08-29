@@ -18,13 +18,30 @@ export function LanyardCard({
   member,
   uid,
   deptKey,
+  lastTap,
 }: {
   member: MemberPublic
   uid?: string | null
   deptKey?: string | null
+  lastTap?: string | null
 }) {
   const dept = deptKey ?? member.dept ?? undefined
-  const roles = (member.roles || []).filter((r) => r !== 'member')
+  // Access scopes = roles beyond the base `member` grant, beyond the
+  // department already shown in the top badge, and beyond the role title
+  // shown under the name — no duplicate labels anywhere.
+  const scopes = (member.roles || []).filter(
+    (r) =>
+      r !== 'member' &&
+      ROLE_DEPT_KEY[r] !== dept &&
+      (ROLE_SHORT[r] ?? r) !== (member.role || 'Member')
+  )
+
+  const memberSince = member.member_since
+    ? new Date(member.member_since).toLocaleDateString(undefined, {
+        month: 'short',
+        year: 'numeric',
+      })
+    : null
 
   return (
     <div className="lanyard-card" data-dept={dept ?? ''}>
@@ -41,20 +58,13 @@ export function LanyardCard({
           <div className="lanyard-card__photo">{member.initials || 'MU'}</div>
           <div className="lanyard-card__name">{member.name}</div>
           <div className="lanyard-card__role">{member.role || 'Member'}</div>
-          {member.department && (
-            <div className="lanyard-card__dept">
-              <span className="dept-tag" data-dept={dept}>
-                {member.department.short}
-              </span>
-            </div>
-          )}
-          {roles.length > 0 && (
-            <div className="lanyard-card__chips">
-              {roles.map((r) => (
+          {scopes.length > 0 && (
+            <div className="lanyard-card__chips" role="list" aria-label="Access scopes">
+              {scopes.map((r) => (
                 <span
                   key={r}
-                  className={`role-chip ${r === 'super_admin' ? 'is-admin' : ''}`}
-                  data-dept={ROLE_DEPT_KEY[r] ?? ''}
+                  className={`lanyard-card__chip ${r === 'super_admin' ? 'is-admin' : ''}`}
+                  role="listitem"
                 >
                   {ROLE_SHORT[r] ?? r}
                 </span>
@@ -63,9 +73,27 @@ export function LanyardCard({
           )}
         </div>
 
+        <div className="lanyard-card__meta">
+          {memberSince && (
+            <div className="lanyard-card__meta-item">
+              <span className="lanyard-card__meta-label">Member since</span>
+              <span className="lanyard-card__meta-value">{memberSince}</span>
+            </div>
+          )}
+          {lastTap && (
+            <div className="lanyard-card__meta-item">
+              <span className="lanyard-card__meta-label">Last tap</span>
+              <span className="lanyard-card__meta-value">{lastTap}</span>
+            </div>
+          )}
+        </div>
+
         <div className="lanyard-card__footer">
           <span className="lanyard-card__uid">UID · {uid ?? '—'}</span>
-          <span className="lanyard-card__nfc">{NFC_ICON}</span>
+          <span className="lanyard-card__nfc">
+            {NFC_ICON}
+            NFC
+          </span>
         </div>
       </div>
     </div>

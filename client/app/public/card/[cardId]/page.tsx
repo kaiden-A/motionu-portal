@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ClaimButton } from '@/components/claim-button'
-import { StatusPill, DeptTag } from '@/components/badge'
+import { StatusPill } from '@/components/badge'
 import { LanyardCard } from '@/components/lanyard-card'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { backendFetch } from '@/lib/backend'
@@ -42,10 +42,10 @@ export default async function PublicCardPage({
               member={card.member}
               uid={card.uid}
               deptKey={card.member.dept}
+              lastTap={card.last_tap}
             />
             <div className="flex items-center justify-center gap-2">
               <StatusPill assigned />
-              <DeptTag short={card.member.department?.short} />
             </div>
           </>
         ) : (
