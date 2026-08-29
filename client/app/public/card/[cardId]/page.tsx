@@ -32,7 +32,10 @@ export default async function PublicCardPage({
   return (
     <body className="public-body">
       <ThemeToggle floating />
-      <main className="public-shell flex flex-col items-center gap-6" style={{ justifyContent: 'center', minHeight: '100dvh' }}>
+      <main
+        className="public-shell flex flex-col gap-6"
+        style={{ justifyContent: 'center', minHeight: '100dvh' }}
+      >
         {card.assigned && card.member ? (
           <>
             <LanyardCard
@@ -40,7 +43,7 @@ export default async function PublicCardPage({
               uid={card.uid}
               deptKey={card.member.dept}
             />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <StatusPill assigned />
               <DeptTag short={card.member.department?.short} />
             </div>
