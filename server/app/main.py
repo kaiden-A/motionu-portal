@@ -35,7 +35,7 @@ app.include_router(users_router.router)
 
 @app.get("/api/v1/healthz")
 def health():
-    return {"status": "ok"}
+    return {"status": "onz"}
 
 
 def main() -> None:
