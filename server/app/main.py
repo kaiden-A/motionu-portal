@@ -33,7 +33,7 @@ app.include_router(news_router.router)
 app.include_router(users_router.router)
 
 
-@app.get("/api/v1/health")
+@app.get("/api/v1/healthz")
 def health():
     return {"status": "ok"}
 
