@@ -13,8 +13,27 @@ bearer_scheme = HTTPBearer(auto_error=False)
 
 _jwks_client = PyJWKClient(settings.zitadel_jwks_uri, cache_keys=True)
 
-# Roles that allow card assignment (project "Motion-U Internal Apps").
+# Role -> capability grants (project "Motion-U Internal Apps").
+# Zitadel remains the source of truth for roles; these sets decide what
+# each role may do inside the portal.
+ROLE_CAPS = {
+    "manage_users": {"super_admin", "mainboards"},
+    "manage_cards": {"super_admin", "mainboards", "Inter"},
+    "manage_news": {"super_admin", "mainboards", "Inter"},
+    "manage_apps": {"super_admin", "mainboards"},
+    "manage_achievements": {"super_admin", "mainboards", "Inter"},
+}
+
+# Backwards-compatible: roles with any admin capability.
 ADMIN_ROLES = {"super_admin", "mainboards", "Inter"}
+
+
+def member_caps(member: Member) -> set[str]:
+    """Capabilities granted to a member from their synced roles."""
+    roles = set(member.roles or [])
+    if member.is_admin:
+        roles.add("super_admin")
+    return {cap for cap, allowed in ROLE_CAPS.items() if roles & allowed}
 
 
 def _verify_access_token(token: str) -> dict:
@@ -104,9 +123,7 @@ def get_admin_member(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     member: Member = Depends(get_current_member),
 ) -> Member:
-    """Card/app management requires one of the admin roles (super_admin,
-    mainboards, Inter) — from the member's synced Zitadel roles, the access
-    token, or the DB is_admin flag."""
+    """Legacy gate — any admin role (super_admin, mainboards, Inter)."""
     if member.is_admin or bool(set(member.roles or []) & ADMIN_ROLES):
         return member
     if credentials:
@@ -117,3 +134,27 @@ def get_admin_member(
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Admin role (super_admin, mainboards, Inter) required",
     )
+
+
+def require_cap(cap: str):
+    """Dependency factory — grants access only if the member holds a role
+    that unlocks the given capability (checked against synced DB roles and
+    the access token claims)."""
+
+    def gate(
+        credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+        member: Member = Depends(get_current_member),
+    ) -> Member:
+        allowed = ROLE_CAPS[cap]
+        if member.is_admin or bool(set(member.roles or []) & allowed):
+            return member
+        if credentials:
+            payload = _verify_access_token(credentials.credentials)
+            if get_token_roles(payload) & allowed:
+                return member
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Capability '{cap}' required",
+        )
+
+    return gate

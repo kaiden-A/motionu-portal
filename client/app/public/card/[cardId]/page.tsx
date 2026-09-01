@@ -6,7 +6,7 @@ import { LanyardCard } from '@/components/lanyard-card'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { backendFetch } from '@/lib/backend'
 import { getSession } from '@/lib/session'
-import type { CardPublic } from '@/lib/types'
+import type { Achievement, CardPublic } from '@/lib/types'
 
 export const metadata: Metadata = { title: 'Card · Motion-U Portals' }
 
@@ -27,6 +27,14 @@ export default async function PublicCardPage({
     notFound()
   }
 
+  const catalog = await backendFetch<Achievement[]>(
+    '/api/v1/achievements',
+    { auth: false }
+  ).catch(() => [] as Achievement[])
+  const earnedBadges = (card.member?.achievements ?? [])
+    .map((key) => catalog.find((a) => a.key === key))
+    .filter((a): a is Achievement => !!a)
+
   const session = await getSession()
 
   return (
@@ -36,16 +44,30 @@ export default async function PublicCardPage({
         className="public-shell flex flex-col gap-6"
         style={{ justifyContent: 'center', minHeight: '100dvh' }}
       >
-        {card.assigned && card.member ? (
+        {card.assigned && card.member && card.member.is_active !== false ? (
           <>
             <LanyardCard
               member={card.member}
               uid={card.uid}
               deptKey={card.member.dept}
               lastTap={card.last_tap}
+              badges={earnedBadges}
             />
             <div className="flex items-center justify-center gap-2">
               <StatusPill assigned />
+            </div>
+          </>
+        ) : card.assigned && card.member ? (
+          <>
+            <div className="w-full flex flex-col items-center gap-4">
+              <span className="eyebrow">Card · {card.card_id}</span>
+              <h1 className="h-lg" style={{ textTransform: 'none', lineHeight: 1.1 }}>
+                This card is suspended
+              </h1>
+              <p className="text-dim" style={{ fontSize: '0.92rem', maxWidth: '36ch' }}>
+                This card&apos;s member has been suspended, so the credential is not
+                displayed. Contact the mainboard if you believe this is a mistake.
+              </p>
             </div>
           </>
         ) : (

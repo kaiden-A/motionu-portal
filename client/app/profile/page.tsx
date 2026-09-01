@@ -3,7 +3,7 @@ import { Sidebar } from '@/components/sidebar'
 import { IdBadge, Achievement, StatusPill, DeptTag, RoleChips } from '@/components/badge'
 import { backendFetch, BackendError } from '@/lib/backend'
 import { getAccessToken } from '@/lib/backend'
-import type { MemberMe } from '@/lib/types'
+import type { Achievement as AchievementDef, MemberMe } from '@/lib/types'
 
 export const metadata = { title: 'Profile · Motion-U Portals' }
 
@@ -22,6 +22,12 @@ export default async function ProfilePage() {
 
   const me = await getMe()
   if (!me) redirect('/login')
+
+  const catalog = await backendFetch<AchievementDef[]>('/api/v1/achievements').catch(() => [] as AchievementDef[])
+  const earned = (me.achievements ?? [])
+    .map((key) => catalog.find((a) => a.key === key))
+    .filter((a): a is AchievementDef => !!a)
+  const unknownKeys = (me.achievements ?? []).filter((key) => !catalog.some((a) => a.key === key))
 
   return (
     <>
@@ -44,6 +50,7 @@ export default async function ProfilePage() {
                 uid={me.card?.uid ?? null}
                 tilt
                 deptKey={me.dept}
+                badges={earned}
               />
             </div>
             <div className="mt-4" style={{ textAlign: 'center' }}>
@@ -100,8 +107,15 @@ export default async function ProfilePage() {
             <div className="mt-8">
               <span className="eyebrow">Badges earned</span>
               <div className="flex mt-4" style={{ flexDirection: 'column', gap: 10 }}>
-                {me.achievements.length ? (
-                  me.achievements.map((a) => <Achievement key={a} label={a} />)
+                {earned.length || unknownKeys.length ? (
+                  <>
+                    {earned.map((a) => (
+                      <Achievement key={a.key} label={a.label} desc={a.desc ?? undefined} icon={a.icon} />
+                    ))}
+                    {unknownKeys.map((k) => (
+                      <Achievement key={k} label={k} />
+                    ))}
+                  </>
                 ) : (
                   <p className="text-faint">
                     No badges yet — first tap at a station starts the record.

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import get_admin_member, get_current_member
+from app.dependencies import get_current_member, require_cap
 from app.models import Card, Department, Member
 from app.schemas import (
     CardAdmin,
@@ -45,6 +45,7 @@ def _to_public(db: Session, card: Card) -> CardPublic:
                 "dept": member.dept,
                 "role": member.role,
                 "roles": member.roles or [],
+                "is_active": member.is_active,
                 "achievements": member.achievements or [],
                 "member_since": member.member_since.isoformat() if member.member_since else None,
                 "department": _department(db, member.dept),
@@ -56,7 +57,7 @@ def _to_public(db: Session, card: Card) -> CardPublic:
 
 
 @router.get("/directory/list", response_model=list[DirectoryUser])
-def directory(db: Session = Depends(get_db), _admin: Member = Depends(get_admin_member)):
+def directory(db: Session = Depends(get_db), _admin: Member = Depends(require_cap("manage_cards"))):
     """Zitadel user directory (via BOT_TOKEN) for the admin assign dropdown."""
     users = search_zitadel_users(limit=200)
     return [
@@ -84,7 +85,7 @@ def claim(card_id: str, db: Session = Depends(get_db), member: Member = Depends(
 
 
 @router.get("", response_model=list[CardAdmin])
-def list_cards(db: Session = Depends(get_db), _admin: Member = Depends(get_admin_member)):
+def list_cards(db: Session = Depends(get_db), _admin: Member = Depends(require_cap("manage_cards"))):
     cards = db.query(Card).order_by(Card.card_id).all()
     return [
         CardAdmin(
@@ -101,7 +102,7 @@ def list_cards(db: Session = Depends(get_db), _admin: Member = Depends(get_admin
 
 @router.post("", response_model=CardAdmin, status_code=status.HTTP_201_CREATED)
 def register_card(
-    body: CardCreate, db: Session = Depends(get_db), _admin: Member = Depends(get_admin_member)
+    body: CardCreate, db: Session = Depends(get_db), _admin: Member = Depends(require_cap("manage_cards"))
 ):
     if db.query(Card).filter(Card.card_id == body.card_id).first():
         raise HTTPException(status_code=409, detail="card_id already exists")
@@ -126,7 +127,7 @@ def assign(
     card_id: str,
     body: CardAssignRequest,
     db: Session = Depends(get_db),
-    admin: Member = Depends(get_admin_member),
+    admin: Member = Depends(require_cap("manage_cards")),
 ):
     card = assign_card(db, card_id, body.zitadel_sub, admin)
     public = _to_public(db, card)

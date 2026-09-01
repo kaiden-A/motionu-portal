@@ -1,4 +1,7 @@
-import { ROLE_SHORT, type MemberPublic } from '@/lib/types'
+import { BadgeTip } from '@/components/badge-tip'
+import { AppIcon } from '@/components/icon-picker'
+import { ROLE_SHORT, type Achievement, type MemberPublic } from '@/lib/types'
+import { iconFa } from '@/lib/icons'
 
 const NFC_ICON = (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -39,12 +42,14 @@ export function IdBadge({
   size = 'md',
   tilt = false,
   deptKey,
+  badges = [],
 }: {
   member: MemberPublic
   uid?: string | null
   size?: 'sm' | 'md'
   tilt?: boolean
   deptKey?: string | null
+  badges?: Achievement[]
 }) {
   const dept = deptKey ?? member.dept ?? undefined
   const sizeClass = size === 'sm' ? 'id-badge--sm' : ''
@@ -63,6 +68,17 @@ export function IdBadge({
       <div className="id-badge__name">{member.name}</div>
       <div className="id-badge__role">{member.role || 'Member'}</div>
       <RoleChips roles={member.roles} />
+      {badges.length > 0 && size !== 'sm' && (
+        <div className="id-badge__badges" role="list" aria-label="Badges earned">
+          {badges.map((b) => (
+            <BadgeTip key={b.key} badge={b}>
+              <span className="id-badge__badge" role="listitem">
+                <AppIcon icon={b.icon} />
+              </span>
+            </BadgeTip>
+          ))}
+        </div>
+      )}
       <div className="id-badge__footer">
         <span className="id-badge__uid">UID · {uid ?? '—'}</span>
         <span className="id-badge__nfc">{NFC_ICON}</span>
@@ -71,13 +87,11 @@ export function IdBadge({
   )
 }
 
-export function Achievement({ label, desc }: { label: string; desc?: string }) {
+export function Achievement({ label, desc, icon }: { label: string; desc?: string; icon?: string }) {
   return (
     <div className="achievement">
       <div className="achievement__icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path d="M12 2l2.4 5.1 5.6.7-4.1 3.9 1 5.6-4.9-2.7-4.9 2.7 1-5.6L4 7.8l5.6-.7L12 2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-        </svg>
+        <i className={`fa-solid ${iconFa(icon ?? 'award')}`} aria-hidden />
       </div>
       <div className="achievement__body">
         <div className="achievement__title">{label}</div>

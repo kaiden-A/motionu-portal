@@ -18,6 +18,7 @@ class Member(Base):
     role: Mapped[str | None] = mapped_column(String(128), nullable=True)
     roles: Mapped[list] = mapped_column(JSON, default=list)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     achievements: Mapped[list] = mapped_column(JSON, default=list)
     member_since: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())

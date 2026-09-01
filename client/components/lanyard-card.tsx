@@ -1,4 +1,6 @@
-import { ROLE_SHORT, type MemberPublic } from '@/lib/types'
+import { BadgeTip } from '@/components/badge-tip'
+import { AppIcon } from '@/components/icon-picker'
+import { ROLE_SHORT, type Achievement, type MemberPublic } from '@/lib/types'
 
 const NFC_ICON = (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -19,11 +21,13 @@ export function LanyardCard({
   uid,
   deptKey,
   lastTap,
+  badges = [],
 }: {
   member: MemberPublic
   uid?: string | null
   deptKey?: string | null
   lastTap?: string | null
+  badges?: Achievement[]
 }) {
   const dept = deptKey ?? member.dept ?? undefined
   // Access scopes = roles beyond the base `member` grant, beyond the
@@ -87,6 +91,18 @@ export function LanyardCard({
             </div>
           )}
         </div>
+
+        {badges.length > 0 && (
+          <div className="lanyard-card__badges" role="list" aria-label="Badges earned">
+            {badges.map((b) => (
+              <BadgeTip key={b.key} badge={b}>
+                <span className="lanyard-card__badge" role="listitem">
+                  <AppIcon icon={b.icon} />
+                </span>
+              </BadgeTip>
+            ))}
+          </div>
+        )}
 
         <div className="lanyard-card__footer">
           <span className="lanyard-card__uid">UID · {uid ?? '—'}</span>

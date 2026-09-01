@@ -5,7 +5,7 @@ import { Sidebar } from '@/components/sidebar'
 import { StatusPill, DeptTag } from '@/components/badge'
 import { backendFetch } from '@/lib/backend'
 import { getAccessToken } from '@/lib/backend'
-import type { CardAdmin, DirectoryUser, MemberMe } from '@/lib/types'
+import { CAPS, type CardAdmin, type DirectoryUser, type MemberMe } from '@/lib/types'
 
 export const metadata = { title: 'Card Management · Motion-U Portals' }
 
@@ -19,7 +19,7 @@ export default async function CardsPage() {
     backendFetch<MemberMe>('/api/v1/members/me'),
   ])
 
-  if (!me.is_admin) redirect('/profile')
+  if (!me.caps.includes(CAPS.manageCards)) redirect('/profile')
 
   const assignedCount = cards.filter((c) => c.assigned).length
   const unassignedCount = cards.length - assignedCount

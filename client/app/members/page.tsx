@@ -3,7 +3,7 @@ import { MembersGrid } from '@/components/members-grid'
 import { Sidebar } from '@/components/sidebar'
 import { backendFetch } from '@/lib/backend'
 import { getAccessToken } from '@/lib/backend'
-import type { MemberDirectoryItem, MemberMe } from '@/lib/types'
+import type { Achievement, MemberDirectoryItem, MemberMe } from '@/lib/types'
 
 export const metadata = { title: 'Members · Motion-U Portals' }
 
@@ -11,9 +11,10 @@ export default async function MembersPage() {
   const token = await getAccessToken()
   if (!token) redirect('/login')
 
-  const [members, me] = await Promise.all([
+  const [members, me, badges] = await Promise.all([
     backendFetch<MemberDirectoryItem[]>('/api/v1/members'),
     backendFetch<MemberMe>('/api/v1/members/me'),
+    backendFetch<Achievement[]>('/api/v1/achievements').catch(() => [] as Achievement[]),
   ])
 
   return (
@@ -27,7 +28,7 @@ export default async function MembersPage() {
             Search by name, or filter by department to see who carries which roles.
           </p>
         </section>
-        <MembersGrid members={members} />
+        <MembersGrid members={members} badges={badges} />
       </div>
     </>
   )

@@ -15,26 +15,20 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
-      app_id?: string
       name?: string
       desc?: string | null
-      category?: string
-      dept?: string | null
       icon?: string
       url?: string | null
       enabled?: boolean
     }
-    if (!body.app_id || !body.name) {
-      return NextResponse.json({ error: 'app_id and name are required' }, { status: 400 })
+    if (!body.name) {
+      return NextResponse.json({ error: 'name is required' }, { status: 400 })
     }
     const data = await backendFetch<unknown>('/api/v1/apps', {
       method: 'POST',
       body: {
-        app_id: body.app_id,
         name: body.name,
         desc: body.desc ?? null,
-        category: body.category ?? 'Internal',
-        dept: body.dept ?? null,
         icon: body.icon ?? 'grid',
         url: body.url ?? null,
         enabled: body.enabled ?? true,

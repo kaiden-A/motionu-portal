@@ -4,13 +4,16 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ThemeToggle } from '@/components/theme-toggle'
-import type { MemberMe } from '@/lib/types'
+import { CAPS, type MemberMe } from '@/lib/types'
 
 const NAV_LINKS = [
   { href: '/profile', label: 'Profile', icon: 'fa-id-card' },
+  { href: '/news', label: 'News & Events', icon: 'fa-newspaper' },
   { href: '/members', label: 'Members', icon: 'fa-users' },
   { href: '/apps', label: 'Apps', icon: 'fa-grip' },
-  { href: '/cards', label: 'Cards', icon: 'fa-table-columns', adminOnly: true },
+  { href: '/cards', label: 'Cards', icon: 'fa-table-columns', cap: CAPS.manageCards },
+  { href: '/users', label: 'Users', icon: 'fa-user-gear', cap: CAPS.manageUsers },
+  { href: '/achievements', label: 'Badges', icon: 'fa-award', cap: CAPS.manageAchievements },
 ]
 
 export function Sidebar({ me }: { me: MemberMe }) {
@@ -29,7 +32,8 @@ export function Sidebar({ me }: { me: MemberMe }) {
     }
   }, [open])
 
-  const links = NAV_LINKS.filter((l) => !l.adminOnly || me.is_admin)
+  const caps = new Set(me.caps ?? [])
+  const links = NAV_LINKS.filter((l) => !l.cap || caps.has(l.cap))
 
   return (
     <>

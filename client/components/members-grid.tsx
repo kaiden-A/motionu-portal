@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ROLE_SHORT, DEPARTMENTS, type MemberDirectoryItem } from '@/lib/types'
+import { BadgeTip } from '@/components/badge-tip'
+import { AppIcon } from '@/components/icon-picker'
+import { ROLE_SHORT, DEPARTMENTS, type Achievement, type MemberDirectoryItem } from '@/lib/types'
 
 const ROLE_DEPT_KEY: Record<string, string> = {
   mainboards: 'mainboard',
@@ -11,7 +13,13 @@ const ROLE_DEPT_KEY: Record<string, string> = {
   entrep: 'entrepreneur',
 }
 
-export function MembersGrid({ members }: { members: MemberDirectoryItem[] }) {
+export function MembersGrid({
+  members,
+  badges = [],
+}: {
+  members: MemberDirectoryItem[]
+  badges?: Achievement[]
+}) {
   const [query, setQuery] = useState('')
   const [dept, setDept] = useState('all')
 
@@ -52,6 +60,9 @@ export function MembersGrid({ members }: { members: MemberDirectoryItem[] }) {
       <div className="member-list" style={{ gap: 10 }}>
         {filtered.map((m) => {
           const roles = (m.roles || []).filter((r) => r !== 'member')
+          const earned = (m.achievements ?? [])
+            .map((key) => badges.find((b) => b.key === key))
+            .filter((b): b is Achievement => !!b)
           return (
             <div key={m.zitadel_sub ?? m.name} className="member-row" data-dept={m.dept ?? ''}>
               <div className="member-row__avatar">{m.initials}</div>
@@ -66,6 +77,17 @@ export function MembersGrid({ members }: { members: MemberDirectoryItem[] }) {
                     ))
                   ) : (
                     <span className="role-chip">Member</span>
+                  )}
+                  {earned.length > 0 && (
+                    <span className="member-row__badges" role="list" aria-label="Badges earned">
+                      {earned.map((b) => (
+                        <BadgeTip key={b.key} badge={b}>
+                          <span className="member-row__badge" role="listitem">
+                            <AppIcon icon={b.icon} />
+                          </span>
+                        </BadgeTip>
+                      ))}
+                    </span>
                   )}
                 </div>
               </div>

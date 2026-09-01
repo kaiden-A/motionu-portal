@@ -13,8 +13,6 @@ class App(Base):
     app_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     name: Mapped[str] = mapped_column(String(128))
     desc: Mapped[str | None] = mapped_column(String(512), nullable=True)
-    category: Mapped[str] = mapped_column(String(16), default="Internal")  # Internal | Public
-    dept: Mapped[str | None] = mapped_column(String(32), nullable=True)
     icon: Mapped[str] = mapped_column(String(32), default="grid")
     url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True)

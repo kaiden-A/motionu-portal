@@ -2,7 +2,7 @@ import { AppsGrid } from '@/components/apps-grid'
 import { Sidebar } from '@/components/sidebar'
 import { backendFetch } from '@/lib/backend'
 import { getAccessToken } from '@/lib/backend'
-import type { AppPublic, MemberMe } from '@/lib/types'
+import { CAPS, type AppPublic, type MemberMe } from '@/lib/types'
 
 export const metadata = { title: 'Apps · Motion-U Portals' }
 
@@ -21,10 +21,10 @@ export default async function AppsPage() {
           <span className="eyebrow">Directory</span>
           <h1 className="h-xl mt-4">Every Motion-U app, in one place</h1>
           <p className="lede mt-4">
-            Internal tools committees run day to day, and public apps every member can open.
+            Internal tools committees run day to day — every Motion-U app in one place.
           </p>
         </section>
-        <AppsGrid apps={apps} admin={!!me?.is_admin} />
+        <AppsGrid apps={apps} admin={!!me?.caps.includes(CAPS.manageApps)} />
       </div>
     </>
   )

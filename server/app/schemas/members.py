@@ -19,6 +19,7 @@ class MemberPublic(BaseModel):
     dept: str | None = None
     role: str | None = None
     roles: list[str] = []
+    is_active: bool = True
     achievements: list[str] = []
     member_since: str | None = None
     department: DepartmentPublic | None = None
@@ -38,5 +39,6 @@ class MemberMe(BaseModel):
     role: str | None = None
     roles: list[str] = []
     is_admin: bool = False
+    caps: list[str] = []
     achievements: list[str] = []
     card: "CardPublic | None" = None

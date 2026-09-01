@@ -8,6 +8,7 @@ from app.dependencies import (
     bearer_scheme,
     get_current_member,
     has_admin_role,
+    member_caps,
     _verify_access_token,
 )
 from app.models import Card, Department, Member
@@ -30,6 +31,7 @@ def _to_directory_item(db: Session, member: Member) -> MemberDirectoryItem:
         dept=member.dept,
         role=member.role,
         roles=member.roles or [],
+        is_active=member.is_active,
         achievements=member.achievements or [],
         member_since=member.member_since.isoformat() if member.member_since else None,
         department=dept,
@@ -74,6 +76,7 @@ def me(
                 "dept": member.dept,
                 "role": member.role,
                 "roles": member.roles or [],
+                "is_active": member.is_active,
                 "achievements": member.achievements or [],
                 "member_since": member.member_since.isoformat() if member.member_since else None,
                 "department": dept,
@@ -87,6 +90,7 @@ def me(
         role=member.role,
         roles=member.roles or [],
         is_admin=is_admin,
+        caps=sorted(member_caps(member)),
         achievements=member.achievements or [],
         card=card_public,
     )

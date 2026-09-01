@@ -2,21 +2,18 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { AppIcon } from '@/components/apps-grid'
-import { DEPARTMENTS, type AppPublic } from '@/lib/types'
+import { AppIcon, IconPicker } from '@/components/icon-picker'
+import type { AppPublic } from '@/lib/types'
 
 const EMPTY = {
-  app_id: '',
   name: '',
   desc: '',
-  category: 'Internal',
-  dept: '',
   icon: 'grid',
   url: '',
   enabled: true,
 }
 
-const ICON_OPTIONS = ['grid', 'globe', 'camera', 'users', 'wallet', 'calendar', 'shirt', 'activity', 'nfc', 'star', 'bolt', 'layers', 'chart', 'book']
+type AppFormState = typeof EMPTY & { app_id?: string }
 
 export function AppsManageModal({
   apps,
@@ -26,7 +23,7 @@ export function AppsManageModal({
   onClose: () => void
 }) {
   const router = useRouter()
-  const [editing, setEditing] = useState<typeof EMPTY | null>(null)
+  const [editing, setEditing] = useState<AppFormState | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -43,7 +40,6 @@ export function AppsManageModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...data,
-          dept: data.dept || null,
           desc: data.desc || null,
           url: data.url || null,
         }),
@@ -115,8 +111,6 @@ export function AppsManageModal({
                   <thead>
                     <tr>
                       <th>App</th>
-                      <th>Category</th>
-                      <th>Dept</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>
@@ -131,25 +125,13 @@ export function AppsManageModal({
                             </div>
                             <div>
                               <div style={{ fontWeight: 700 }}>{app.name}</div>
-                              <div className="font-mono text-faint" style={{ fontSize: '0.7rem' }}>
-                                {app.app_id}
-                              </div>
+                              {app.url && (
+                                <div className="font-mono text-faint" style={{ fontSize: '0.7rem' }}>
+                                  {app.url}
+                                </div>
+                              )}
                             </div>
                           </div>
-                        </td>
-                        <td>
-                          <span className={`app-card__badge ${app.category === 'Public' ? 'is-public' : ''}`}>
-                            {app.category}
-                          </span>
-                        </td>
-                        <td>
-                          {app.dept ? (
-                            <span className="dept-tag" data-dept={app.dept}>
-                              {DEPARTMENTS.find((d) => d.key === app.dept)?.short ?? app.dept}
-                            </span>
-                          ) : (
-                            <span className="text-faint">—</span>
-                          )}
                         </td>
                         <td>
                           <span className={`status-pill ${app.enabled ? 'active' : 'unassigned'}`}>
@@ -160,7 +142,7 @@ export function AppsManageModal({
                           <div className="flex gap-2" style={{ flexWrap: 'wrap' }}>
                             <button
                               className="btn btn-ghost btn-sm"
-                              onClick={() => setEditing({ ...EMPTY, ...app, dept: app.dept ?? '', desc: app.desc ?? '', url: app.url ?? '' })}
+                              onClick={() => setEditing({ ...EMPTY, ...app, desc: app.desc ?? '', url: app.url ?? '' })}
                             >
                               Edit
                             </button>
@@ -204,48 +186,38 @@ function AppForm({
   onSubmit,
   onCancel,
 }: {
-  initial: typeof EMPTY
+  initial: AppFormState
   submitLabel: string
-  onSubmit: (data: typeof EMPTY) => Promise<void>
+  onSubmit: (data: AppFormState) => Promise<void>
   onCancel?: () => void
 }) {
   const [form, setForm] = useState(initial)
-  const [error, setError] = useState('')
 
-  const set = (key: keyof typeof EMPTY) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+  const set = (key: keyof AppFormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [key]: e.target.value })
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    setError('')
     try {
       await onSubmit(form)
-    } catch (err) {
-      setError((err as Error).message || 'Save failed')
+    } catch {
+      /* errors surface in the parent's banner */
     }
   }
 
   return (
     <form className="assign-form" onSubmit={submit}>
-      <input placeholder="app_id (unique)" value={form.app_id} onChange={set('app_id')} required disabled={!!initial.app_id} />
-      <input placeholder="Name" value={form.name} onChange={set('name')} required />
+      <input className="form-full" placeholder="Name" value={form.name} onChange={set('name')} required />
       <input className="form-full" placeholder="Description" value={form.desc} onChange={set('desc')} />
       <input className="form-full" placeholder="https://app-url" value={form.url} onChange={set('url')} />
-      <select value={form.category} onChange={set('category')}>
-        <option value="Internal">Internal</option>
-        <option value="Public">Public</option>
-      </select>
-      <select value={form.dept} onChange={set('dept')}>
-        <option value="">— No dept —</option>
-        {DEPARTMENTS.map((d) => (
-          <option key={d.key} value={d.key}>{d.short}</option>
-        ))}
-      </select>
-      <select value={form.icon} onChange={set('icon')}>
-        {ICON_OPTIONS.map((i) => (
-          <option key={i} value={i}>{i}</option>
-        ))}
-      </select>
+      <div className="form-full">
+        <span className="font-mono text-faint" style={{ fontSize: '0.68rem', textTransform: 'uppercase' }}>
+          Icon
+        </span>
+        <div className="mt-2">
+          <IconPicker value={form.icon} onChange={(icon) => setForm({ ...form, icon })} />
+        </div>
+      </div>
       <label className="flex items-center gap-2" style={{ fontSize: '0.8rem', alignItems: 'center' }}>
         <input
           type="checkbox"
@@ -263,7 +235,6 @@ function AppForm({
           </button>
         )}
       </div>
-      {error && <span className="auth-error form-full">{error}</span>}
     </form>
   )
 }
