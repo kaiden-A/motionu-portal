@@ -18,6 +18,18 @@ from app.schemas.members import (
     MemberMe,
     MemberPublic,
 )
+from app.schemas.memberships import (
+    MEMBERSHIP_STATUSES,
+    MembershipAdmin,
+    MembershipAssignCard,
+    MembershipCreate,
+    MembershipMe,
+    MembershipPlanCreate,
+    MembershipPlanPublic,
+    MembershipPlanUpdate,
+    MembershipPublic,
+    MembershipUpdate,
+)
 from app.schemas.news import (
     EventCreate,
     EventPublic,
@@ -33,11 +45,14 @@ from app.schemas.users import (
     PortalUserUpdate,
 )
 
-# Resolve the forward reference `CardPublic` in MemberMe (defined in cards.py).
+# Resolve the forward reference `CardPublic` in MemberMe / MembershipMe
+# (defined in cards.py).
 MemberMe.model_rebuild()
+MembershipMe.model_rebuild()
 
 __all__ = [
     "ALLOWED_ROLE_KEYS",
+    "MEMBERSHIP_STATUSES",
     "AchievementAssign",
     "AchievementCreate",
     "AchievementPublic",
@@ -57,6 +72,15 @@ __all__ = [
     "MemberDirectoryItem",
     "MemberMe",
     "MemberPublic",
+    "MembershipAdmin",
+    "MembershipAssignCard",
+    "MembershipCreate",
+    "MembershipMe",
+    "MembershipPlanCreate",
+    "MembershipPlanPublic",
+    "MembershipPlanUpdate",
+    "MembershipPublic",
+    "MembershipUpdate",
     "NewsCreate",
     "NewsPublic",
     "NewsUpdate",

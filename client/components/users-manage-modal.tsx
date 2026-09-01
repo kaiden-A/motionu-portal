@@ -131,6 +131,7 @@ export function UsersManageModal({ users }: { users: PortalUser[] }) {
                 </div>
                 <div className="form-actions">
                   <button className="btn btn-primary btn-sm" type="submit" disabled={busy}>
+                    {busy ? <span className="spinner" /> : null}
                     {busy ? 'Saving…' : editing ? 'Save changes' : 'Create user'}
                   </button>
                   {editing && (
@@ -190,6 +191,7 @@ function RowActions({ user }: { user: PortalUser }) {
         </button>
       ) : (
         <button className="btn btn-ghost btn-sm" disabled={busy} onClick={reactivate}>
+          {busy ? <span className="spinner" /> : null}
           Reactivate
         </button>
       )}

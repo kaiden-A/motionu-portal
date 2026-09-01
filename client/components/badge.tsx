@@ -109,6 +109,21 @@ export function StatusPill({ assigned }: { assigned: boolean }) {
   )
 }
 
+const MEMBERSHIP_STATUS_CLASS: Record<string, string> = {
+  active: 'active',
+  pending: 'unassigned',
+  expired: 'expired',
+  cancelled: 'expired',
+}
+
+export function MembershipStatusPill({ status }: { status: string }) {
+  return (
+    <span className={`status-pill ${MEMBERSHIP_STATUS_CLASS[status] ?? 'unassigned'}`}>
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </span>
+  )
+}
+
 export function DeptTag({ short }: { short?: string | null }) {
   if (!short) return null
   return <span className="dept-tag">{short}</span>

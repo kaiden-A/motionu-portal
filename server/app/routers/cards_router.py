@@ -106,9 +106,10 @@ def register_card(
 ):
     if db.query(Card).filter(Card.card_id == body.card_id).first():
         raise HTTPException(status_code=409, detail="card_id already exists")
-    if db.query(Card).filter(Card.uid == body.uid).first():
+    uid = (body.uid or "").strip() or f"PENDING-{body.card_id}"
+    if db.query(Card).filter(Card.uid == uid).first():
         raise HTTPException(status_code=409, detail="uid already exists")
-    card = Card(card_id=body.card_id, uid=body.uid)
+    card = Card(card_id=body.card_id, uid=uid)
     db.add(card)
     db.commit()
     db.refresh(card)

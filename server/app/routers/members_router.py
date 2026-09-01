@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -11,8 +13,14 @@ from app.dependencies import (
     member_caps,
     _verify_access_token,
 )
-from app.models import Card, Department, Member
-from app.schemas import CardPublic, MemberDirectoryItem, MemberMe
+from app.models import Card, Department, Member, Membership, MembershipPlan
+from app.schemas import (
+    CardPublic,
+    MemberDirectoryItem,
+    MemberMe,
+    MembershipMe,
+    MembershipPlanPublic,
+)
 
 router = APIRouter(prefix="/api/v1/members", tags=["members"])
 
@@ -41,8 +49,15 @@ def _to_directory_item(db: Session, member: Member) -> MemberDirectoryItem:
 
 @router.get("", response_model=list[MemberDirectoryItem])
 def list_members(db: Session = Depends(get_db), _member: Member = Depends(get_current_member)):
-    """Members directory — login required. Includes Zitadel roles."""
-    members = db.query(Member).order_by(Member.name).all()
+    """Members directory — login required. Includes Zitadel roles.
+    Membership program holders are excluded (managed in /memberships)."""
+    holder_subs = db.query(Membership.member_sub)
+    members = (
+        db.query(Member)
+        .filter(Member.zitadel_sub.notin_(holder_subs))
+        .order_by(Member.name)
+        .all()
+    )
     return [_to_directory_item(db, m) for m in members]
 
 
@@ -82,6 +97,31 @@ def me(
                 "department": dept,
             },
         )
+
+    membership = None
+    m = db.query(Membership).filter(Membership.member_sub == member.zitadel_sub).first()
+    if m:
+        status = m.status
+        if (
+            status == "active"
+            and m.ends_at
+            and m.ends_at < datetime.now(timezone.utc)
+        ):
+            status = "expired"
+        plan = None
+        if m.plan_key:
+            plan = db.query(MembershipPlan).filter(MembershipPlan.key == m.plan_key).first()
+        membership = MembershipMe(
+            name=member.name,
+            email=member.email,
+            status=status,
+            plan=MembershipPlanPublic.model_validate(plan) if plan else None,
+            starts_at=m.starts_at,
+            ends_at=m.ends_at,
+            auto_renew=m.auto_renew,
+            card=card_public,
+        )
+
     return MemberMe(
         name=member.name,
         email=member.email,
@@ -93,4 +133,5 @@ def me(
         caps=sorted(member_caps(member)),
         achievements=member.achievements or [],
         card=card_public,
+        membership=membership,
     )

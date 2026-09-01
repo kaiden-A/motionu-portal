@@ -42,3 +42,4 @@ class MemberMe(BaseModel):
     caps: list[str] = []
     achievements: list[str] = []
     card: "CardPublic | None" = None
+    membership: "MembershipMe | None" = None

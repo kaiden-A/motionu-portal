@@ -19,7 +19,7 @@ class CardAdmin(CardPublic):
 
 class CardCreate(BaseModel):
     card_id: str
-    uid: str
+    uid: str | None = None
 
 
 class CardAssignRequest(BaseModel):

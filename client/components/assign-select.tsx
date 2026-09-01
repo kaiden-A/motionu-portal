@@ -39,6 +39,28 @@ export function AssignSelect({
     }
   }
 
+  async function unlink() {
+    setBusy(true)
+    setError('')
+    try {
+      const res = await fetch(`/api/cards/${encodeURIComponent(card.card_id)}/assign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ zitadel_sub: null }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data?.error ?? 'Unlink failed')
+        return
+      }
+      router.refresh()
+    } catch {
+      setError('Network error — please try again.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="assign-form">
       <select
@@ -54,6 +76,17 @@ export function AssignSelect({
           </option>
         ))}
       </select>
+      {card.assigned && (
+        <button
+          className="btn btn-ghost btn-sm"
+          onClick={unlink}
+          disabled={busy}
+          style={{ color: 'var(--coral)' }}
+          title={`Unassign ${card.card_id}`}
+        >
+          {busy ? <span className="spinner" /> : <i className="fa-solid fa-link-slash" />} Unlink
+        </button>
+      )}
       {error && <span className="auth-error">{error}</span>}
     </div>
   )

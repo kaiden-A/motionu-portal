@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { AppsGrid } from '@/components/apps-grid'
 import { Sidebar } from '@/components/sidebar'
 import { backendFetch } from '@/lib/backend'
@@ -8,15 +9,17 @@ export const metadata = { title: 'Apps · Motion-U Portals' }
 
 export default async function AppsPage() {
   const token = await getAccessToken()
+  if (!token) redirect('/login')
+
   const [apps, me] = await Promise.all([
-    backendFetch<AppPublic[]>('/api/v1/apps', { auth: false }),
-    token ? backendFetch<MemberMe>('/api/v1/members/me') : Promise.resolve(null),
+    backendFetch<AppPublic[]>('/api/v1/apps'),
+    backendFetch<MemberMe>('/api/v1/members/me'),
   ])
 
   return (
     <>
-      {me ? <Sidebar me={me} /> : null}
-      <div className={`wrap ${me ? '' : ''}`} style={{ paddingTop: 56, paddingBottom: 64 }}>
+      <Sidebar me={me} />
+      <div className="wrap" style={{ paddingTop: 56, paddingBottom: 64 }}>
         <section style={{ paddingBottom: 32 }}>
           <span className="eyebrow">Directory</span>
           <h1 className="h-xl mt-4">Every Motion-U app, in one place</h1>

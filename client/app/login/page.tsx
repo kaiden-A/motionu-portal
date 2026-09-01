@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 export const metadata: Metadata = {
@@ -36,7 +37,9 @@ export default async function LoginPage({
       <main className="auth-shell">
         <div className="auth-card">
           <div className="auth-brand">
-            <span className="brand-mark">M</span>
+            <span className="brand-mark">
+              <Image src="/icon.png" alt="Motion-U logo" width={1080} height={1080} />
+            </span>
             <span className="auth-brand__name">
               Motion-U <span className="brand-sub">PORTALS</span>
             </span>

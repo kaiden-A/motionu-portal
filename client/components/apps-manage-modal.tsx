@@ -11,6 +11,7 @@ const EMPTY = {
   icon: 'grid',
   url: '',
   enabled: true,
+  staff_only: false,
 }
 
 type AppFormState = typeof EMPTY & { app_id?: string }
@@ -25,6 +26,7 @@ export function AppsManageModal({
   const router = useRouter()
   const [editing, setEditing] = useState<AppFormState | null>(null)
   const [busy, setBusy] = useState(false)
+  const [pendingApp, setPendingApp] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   async function save(data: typeof EMPTY) {
@@ -56,30 +58,46 @@ export function AppsManageModal({
   }
 
   async function toggle(app: AppPublic) {
-    const res = await fetch(`/api/apps/manage/${encodeURIComponent(app.app_id)}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ enabled: !app.enabled }),
-    })
-    const json = await res.json()
-    if (!res.ok) {
-      setError(json?.error ?? 'Toggle failed')
-      return
+    setPendingApp(app.app_id)
+    setError('')
+    try {
+      const res = await fetch(`/api/apps/manage/${encodeURIComponent(app.app_id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: !app.enabled }),
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        setError(json?.error ?? 'Toggle failed')
+        return
+      }
+      router.refresh()
+    } catch {
+      setError('Network error — please try again.')
+    } finally {
+      setPendingApp(null)
     }
-    router.refresh()
   }
 
   async function remove(app: AppPublic) {
     if (!confirm(`Delete "${app.name}" from the directory?`)) return
-    const res = await fetch(`/api/apps/manage/${encodeURIComponent(app.app_id)}`, {
-      method: 'DELETE',
-    })
-    const json = await res.json()
-    if (!res.ok) {
-      setError(json?.error ?? 'Delete failed')
-      return
+    setPendingApp(app.app_id)
+    setError('')
+    try {
+      const res = await fetch(`/api/apps/manage/${encodeURIComponent(app.app_id)}`, {
+        method: 'DELETE',
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        setError(json?.error ?? 'Delete failed')
+        return
+      }
+      router.refresh()
+    } catch {
+      setError('Network error — please try again.')
+    } finally {
+      setPendingApp(null)
     }
-    router.refresh()
   }
 
   return (
@@ -99,6 +117,7 @@ export function AppsManageModal({
               <h3 className="h-md mb-4">Edit app</h3>
               <AppForm
                 initial={editing}
+                busy={busy}
                 submitLabel={busy ? 'Saving…' : 'Save changes'}
                 onSubmit={save}
                 onCancel={() => setEditing(null)}
@@ -111,6 +130,7 @@ export function AppsManageModal({
                   <thead>
                     <tr>
                       <th>App</th>
+                      <th>Visibility</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>
@@ -134,6 +154,11 @@ export function AppsManageModal({
                           </div>
                         </td>
                         <td>
+                          {app.staff_only && (
+                            <span className="dept-tag" title="Visible to staff only">Staff only</span>
+                          )}
+                        </td>
+                        <td>
                           <span className={`status-pill ${app.enabled ? 'active' : 'unassigned'}`}>
                             {app.enabled ? 'Enabled' : 'Disabled'}
                           </span>
@@ -142,14 +167,26 @@ export function AppsManageModal({
                           <div className="flex gap-2" style={{ flexWrap: 'wrap' }}>
                             <button
                               className="btn btn-ghost btn-sm"
+                              disabled={pendingApp !== null}
                               onClick={() => setEditing({ ...EMPTY, ...app, desc: app.desc ?? '', url: app.url ?? '' })}
                             >
                               Edit
                             </button>
-                            <button className="btn btn-ghost btn-sm" onClick={() => toggle(app)}>
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              disabled={pendingApp !== null}
+                              onClick={() => toggle(app)}
+                            >
+                              {pendingApp === app.app_id ? <span className="spinner" /> : null}
                               {app.enabled ? 'Disable' : 'Enable'}
                             </button>
-                            <button className="btn btn-ghost btn-sm" onClick={() => remove(app)} style={{ color: 'var(--coral)' }}>
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              disabled={pendingApp !== null}
+                              onClick={() => remove(app)}
+                              style={{ color: 'var(--coral)' }}
+                            >
+                              {pendingApp === app.app_id ? <span className="spinner" /> : null}
                               Delete
                             </button>
                           </div>
@@ -168,6 +205,7 @@ export function AppsManageModal({
                 <h3 className="h-md mb-4">Add an app</h3>
                 <AppForm
                   initial={EMPTY}
+                  busy={busy}
                   submitLabel={busy ? 'Saving…' : '+ Add app'}
                   onSubmit={save}
                 />
@@ -183,11 +221,13 @@ export function AppsManageModal({
 function AppForm({
   initial,
   submitLabel,
+  busy,
   onSubmit,
   onCancel,
 }: {
   initial: AppFormState
   submitLabel: string
+  busy: boolean
   onSubmit: (data: AppFormState) => Promise<void>
   onCancel?: () => void
 }) {
@@ -227,10 +267,22 @@ function AppForm({
         />
         Enabled
       </label>
+      <label className="flex items-center gap-2" style={{ fontSize: '0.8rem', alignItems: 'center' }}>
+        <input
+          type="checkbox"
+          checked={form.staff_only}
+          onChange={(e) => setForm({ ...form, staff_only: e.target.checked })}
+          style={{ width: 'auto', minWidth: 0 }}
+        />
+        Staff only (hidden from membership holders)
+      </label>
       <div className="form-actions">
-        <button className="btn btn-primary btn-sm" type="submit">{submitLabel}</button>
+        <button className="btn btn-primary btn-sm" type="submit" disabled={busy}>
+          {busy ? <span className="spinner" /> : null}
+          {submitLabel}
+        </button>
         {onCancel && (
-          <button className="btn btn-ghost btn-sm" type="button" onClick={onCancel}>
+          <button className="btn btn-ghost btn-sm" type="button" onClick={onCancel} disabled={busy}>
             Cancel
           </button>
         )}

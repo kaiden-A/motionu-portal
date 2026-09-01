@@ -9,6 +9,7 @@ from app.routers import (
     apps_router,
     cards_router,
     members_router,
+    memberships_router,
     news_router,
     users_router,
 )
@@ -27,6 +28,7 @@ app.include_router(achievements_router.router)
 app.include_router(apps_router.router)
 app.include_router(cards_router.router)
 app.include_router(members_router.router)
+app.include_router(memberships_router.router)
 app.include_router(news_router.router)
 app.include_router(users_router.router)
 

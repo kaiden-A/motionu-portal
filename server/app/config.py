@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     zitadel_jwks_uri: str
     zitadel_audience: str
     zitadel_allowed_org_id: str
-    zitadel_required_role: str = "member"
+    zitadel_required_roles: list[str] = ["member", "membership"]
     bot_token: str
     cors_origins: str = "http://localhost:3000"
 

@@ -32,7 +32,7 @@ export function ClaimButton({ cardId }: { cardId: string }) {
   return (
     <div>
       <button className="btn btn-primary btn-block" onClick={claim} disabled={busy}>
-        <i className="fa-solid fa-id-card" />
+        {busy ? <span className="spinner" /> : <i className="fa-solid fa-id-card" />}
         {busy ? 'Claiming…' : 'Claim this card'}
       </button>
       {error && <p className="auth-error" style={{ textAlign: 'center' }}>{error}</p>}

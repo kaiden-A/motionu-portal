@@ -176,6 +176,7 @@ ROLE_DEPT_MAP = {
 ROLE_DISPLAY = {
     "super_admin": "Admin",
     "member": "Member",
+    "membership": "Membership",
     "mainboards": "Mainboards",
     "techops": "Technical Operations",
     "mulcom": "Multimedia And Communications",

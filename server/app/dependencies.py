@@ -22,6 +22,7 @@ ROLE_CAPS = {
     "manage_news": {"super_admin", "mainboards", "Inter"},
     "manage_apps": {"super_admin", "mainboards"},
     "manage_achievements": {"super_admin", "mainboards", "Inter"},
+    "manage_memberships": {"super_admin", "mainboards", "techops"},
 }
 
 # Backwards-compatible: roles with any admin capability.
@@ -75,15 +76,16 @@ def _check_org(payload: dict) -> None:
 
 
 def _check_role(payload: dict) -> None:
-    """Enforce the configured Zitadel role if the claim is present."""
+    """Enforce the configured login roles (e.g. member, membership) if the
+    claim is present."""
     roles = payload.get("urn:zitadel:iam:org:project:roles")
     if not roles:
         return
     role_names = list(roles.keys()) if isinstance(roles, dict) else [roles]
-    if settings.zitadel_required_role not in role_names:
+    if not set(role_names) & set(settings.zitadel_required_roles):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Role '{settings.zitadel_required_role}' required",
+            detail=f"One of {settings.zitadel_required_roles} roles required",
         )
 
 

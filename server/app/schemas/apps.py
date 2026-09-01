@@ -10,6 +10,7 @@ class AppPublic(BaseModel):
     icon: str
     url: str | None = None
     enabled: bool = True
+    staff_only: bool = False
 
 
 class AppCreate(BaseModel):
@@ -18,6 +19,7 @@ class AppCreate(BaseModel):
     icon: str = "grid"
     url: str | None = None
     enabled: bool = True
+    staff_only: bool = False
 
 
 class AppUpdate(BaseModel):
@@ -26,3 +28,4 @@ class AppUpdate(BaseModel):
     icon: str | None = None
     url: str | None = None
     enabled: bool | None = None
+    staff_only: bool | None = None

@@ -23,6 +23,11 @@ export default async function CardsPage() {
 
   const assignedCount = cards.filter((c) => c.assigned).length
   const unassignedCount = cards.length - assignedCount
+  const nextCardNum = cards.reduce((max, c) => {
+    const m = /^CARD-(\d+)$/.exec(c.card_id)
+    return m ? Math.max(max, Number(m[1])) : max
+  }, 0)
+  const nextCardId = `CARD-${String(nextCardNum + 1).padStart(3, '0')}`
 
   return (
     <>
@@ -56,7 +61,7 @@ export default async function CardsPage() {
           <p className="session-note">
             Assignments are saved to the database and sync across devices.
           </p>
-          <RegisterCardForm />
+          <RegisterCardForm nextCardId={nextCardId} />
         </div>
 
         <div className="table-scroll">

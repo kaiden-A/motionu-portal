@@ -178,6 +178,7 @@ function NewsManager({
         </label>
         <div className="form-actions">
           <button className="btn btn-primary btn-sm" type="submit" disabled={busy}>
+            {busy ? <span className="spinner" /> : null}
             {busy ? 'Saving…' : editing ? 'Save changes' : 'Publish'}
           </button>
           {editing && (
@@ -300,6 +301,7 @@ function EventsManager({
         </select>
         <div className="form-actions">
           <button className="btn btn-primary btn-sm" type="submit" disabled={busy}>
+            {busy ? <span className="spinner" /> : null}
             {busy ? 'Saving…' : editing ? 'Save changes' : '+ Add event'}
           </button>
           {editing && (

@@ -197,6 +197,7 @@ export function AchievementsAdmin({
 
             <div className="form-actions mt-5">
               <button className="btn btn-primary btn-sm" onClick={saveAssignments} disabled={busy}>
+                {busy ? <span className="spinner" /> : null}
                 {busy ? 'Saving…' : 'Save assignments'}
               </button>
             </div>
@@ -241,6 +242,7 @@ export function AchievementsAdmin({
                 </div>
                 <div className="form-actions">
                   <button className="btn btn-primary btn-sm" type="submit" disabled={busy}>
+                    {busy ? <span className="spinner" /> : null}
                     {busy ? 'Saving…' : editing ? 'Save changes' : '+ Create badge'}
                   </button>
                   <button className="btn btn-ghost btn-sm" type="button" onClick={() => setFormOpen(false)}>

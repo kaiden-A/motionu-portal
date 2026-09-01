@@ -6,7 +6,7 @@ Usage: uv run python -m app.seed
 """
 
 from app.database import SessionLocal
-from app.models import Card, Department, Member
+from app.models import Card, Department, Member, MembershipPlan
 from app.services.zitadel_service import (
     list_org_role_grants,
     primary_dept,
@@ -40,6 +40,38 @@ DEMO_CARDS = [
 ]
 
 
+MEMBERSHIP_PLANS = [
+    {
+        "key": "standard",
+        "name": "Standard",
+        "desc": "Core Motion-U memberships access — card, apps, news and events.",
+        "price_cents": None,
+        "duration_days": 30,
+        "benefits": [
+            "Physical Motion-U card",
+            "Member app catalog access",
+            "News & events updates",
+        ],
+        "enabled": True,
+        "sort": 1,
+    },
+    {
+        "key": "premium",
+        "name": "Premium",
+        "desc": "Everything in Standard plus extended benefits.",
+        "price_cents": None,
+        "duration_days": 30,
+        "benefits": [
+            "Everything in Standard",
+            "Priority access to events",
+            "Extended facility hours",
+        ],
+        "enabled": True,
+        "sort": 2,
+    },
+]
+
+
 def _seed_static(db) -> None:
     for d in DEPARTMENTS:
         if not db.query(Department).filter(Department.key == d["key"]).first():
@@ -47,6 +79,9 @@ def _seed_static(db) -> None:
     for c in DEMO_CARDS:
         if not db.query(Card).filter(Card.card_id == c["card_id"]).first():
             db.add(Card(**c))
+    for p in MEMBERSHIP_PLANS:
+        if not db.query(MembershipPlan).filter(MembershipPlan.key == p["key"]).first():
+            db.add(MembershipPlan(**p))
     db.commit()
 
 
@@ -76,6 +111,7 @@ def seed() -> None:
         _seed_static(db)
         updated = _sync_roles(db)
         print(f"Seeded {len(DEPARTMENTS)} departments, {len(DEMO_CARDS)} cards")
+        print(f"Seeded {len(MEMBERSHIP_PLANS)} membership plans")
         print(f"Synced roles for {updated} members from Zitadel grants")
     finally:
         db.close()

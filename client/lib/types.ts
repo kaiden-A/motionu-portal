@@ -50,6 +50,7 @@ export interface MemberMe {
   caps: string[]
   achievements: string[]
   card?: CardPublic | null
+  membership?: MembershipMe | null
 }
 
 export const CAPS = {
@@ -58,7 +59,87 @@ export const CAPS = {
   manageNews: 'manage_news',
   manageApps: 'manage_apps',
   manageAchievements: 'manage_achievements',
+  manageMemberships: 'manage_memberships',
 } as const
+
+export type MembershipStatus = 'pending' | 'active' | 'expired' | 'cancelled'
+
+export interface MembershipPlan {
+  key: string
+  name: string
+  desc?: string | null
+  price_cents?: number | null
+  duration_days?: number | null
+  benefits: string[]
+  enabled: boolean
+  sort: number
+}
+
+export interface MembershipPlanCreate {
+  name: string
+  desc?: string | null
+  price_cents?: number | null
+  duration_days?: number | null
+  benefits: string[]
+  enabled: boolean
+  sort: number
+}
+
+export interface MembershipPlanUpdate {
+  name?: string
+  desc?: string | null
+  price_cents?: number | null
+  duration_days?: number | null
+  benefits?: string[]
+  enabled?: boolean
+  sort?: number
+}
+
+export interface MembershipMe {
+  name: string
+  email: string
+  status: MembershipStatus
+  plan?: MembershipPlan | null
+  starts_at: string
+  ends_at?: string | null
+  auto_renew: boolean
+  card?: CardPublic | null
+}
+
+export interface MembershipAdmin {
+  id: number
+  member_sub: string
+  plan_key?: string | null
+  status: MembershipStatus
+  starts_at: string
+  ends_at?: string | null
+  auto_renew: boolean
+  notes?: string | null
+  name: string
+  email: string
+  card_id?: string | null
+  plan?: MembershipPlan | null
+}
+
+export interface MembershipCreate {
+  name: string
+  email: string
+  plan_key?: string | null
+  status: MembershipStatus
+  starts_at?: string | null
+  ends_at?: string | null
+  auto_renew?: boolean
+  notes?: string | null
+}
+
+export interface MembershipUpdate {
+  plan_key?: string | null
+  status?: MembershipStatus
+  starts_at?: string | null
+  ends_at?: string | null
+  auto_renew?: boolean
+  notes?: string | null
+}
 
 export interface AppPublic {
   app_id: string
@@ -67,6 +148,7 @@ export interface AppPublic {
   icon: string
   url?: string | null
   enabled: boolean
+  staff_only: boolean
 }
 
 export interface AppCreate {
@@ -75,6 +157,7 @@ export interface AppCreate {
   icon: string
   url?: string | null
   enabled: boolean
+  staff_only: boolean
 }
 
 export interface AppUpdate {
@@ -83,6 +166,7 @@ export interface AppUpdate {
   icon?: string
   url?: string | null
   enabled?: boolean
+  staff_only?: boolean
 }
 
 export interface Achievement {

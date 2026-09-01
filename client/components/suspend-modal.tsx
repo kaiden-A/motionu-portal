@@ -93,6 +93,7 @@ export function SuspendModal({
                     disabled={unlinking || suspending}
                     style={{ color: 'var(--coral)' }}
                   >
+                    {unlinking ? <span className="spinner" /> : null}
                     {unlinking ? 'Unlinking…' : 'Unlink card'}
                   </button>
                   <span className="text-faint" style={{ fontSize: '0.78rem' }}>
@@ -112,6 +113,7 @@ export function SuspendModal({
               disabled={suspending}
               style={{ background: 'linear-gradient(135deg, #ff5a3c, #d63b1f)' }}
             >
+              {suspending ? <span className="spinner" /> : null}
               {suspending ? 'Suspending…' : 'Confirm suspend'}
             </button>
             <button className="btn btn-ghost btn-sm" onClick={onClose} disabled={suspending}>

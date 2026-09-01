@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -11,9 +12,11 @@ const NAV_LINKS = [
   { href: '/news', label: 'News & Events', icon: 'fa-newspaper' },
   { href: '/members', label: 'Members', icon: 'fa-users' },
   { href: '/apps', label: 'Apps', icon: 'fa-grip' },
+  { href: '/membership', label: 'My Membership', icon: 'fa-address-card', membership: true },
   { href: '/cards', label: 'Cards', icon: 'fa-table-columns', cap: CAPS.manageCards },
   { href: '/users', label: 'Users', icon: 'fa-user-gear', cap: CAPS.manageUsers },
   { href: '/achievements', label: 'Badges', icon: 'fa-award', cap: CAPS.manageAchievements },
+  { href: '/memberships', label: 'Memberships', icon: 'fa-address-card', cap: CAPS.manageMemberships },
 ]
 
 export function Sidebar({ me }: { me: MemberMe }) {
@@ -33,7 +36,13 @@ export function Sidebar({ me }: { me: MemberMe }) {
   }, [open])
 
   const caps = new Set(me.caps ?? [])
-  const links = NAV_LINKS.filter((l) => !l.cap || caps.has(l.cap))
+  const isMembershipHolder = !!me.membership
+  const links = NAV_LINKS.filter((l) => {
+    if (l.cap && !caps.has(l.cap)) return false
+    if ('membership' in l && l.membership && !isMembershipHolder) return false
+    if (isMembershipHolder && l.href === '/members') return false
+    return true
+  })
 
   return (
     <>
@@ -46,7 +55,9 @@ export function Sidebar({ me }: { me: MemberMe }) {
       </button>
       <aside className="site-sidebar">
         <Link href="/profile" className="brand sidebar-brand">
-          <span className="brand-mark">M</span>
+          <span className="brand-mark">
+            <Image src="/icon.png" alt="Motion-U logo" width={1080} height={1080} />
+          </span>
           <span>
             Motion-U
             <br />

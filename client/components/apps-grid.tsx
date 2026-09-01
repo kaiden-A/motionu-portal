@@ -33,6 +33,9 @@ export function AppsGrid({ apps, admin = false }: { apps: AppPublic[]; admin?: b
               </div>
               <div className="app-card__footer">
                 <span className="app-card__badge">Internal</span>
+                {app.staff_only && (
+                  <span className="app-card__badge">Staff only</span>
+                )}
               </div>
             </a>
           )

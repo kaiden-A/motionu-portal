@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import require_cap
+from app.dependencies import get_current_member, require_cap
 from app.models import App, Member
 from app.schemas import AppCreate, AppPublic, AppUpdate
 from app.services.text import slugify
@@ -10,6 +10,15 @@ from app.services.text import slugify
 router = APIRouter(prefix="/api/v1/apps", tags=["apps"])
 
 APP_ADMIN = require_cap("manage_apps")
+
+# Any role outside the membership program counts as staff.
+STAFF_ROLES = {"super_admin", "mainboards", "techops", "mulcom", "Inter", "entrep"}
+
+
+def _is_staff(member: Member) -> bool:
+    if member.is_admin:
+        return True
+    return bool(set(member.roles or []) & STAFF_ROLES)
 
 
 def _to_public(app: App) -> AppPublic:
@@ -20,6 +29,7 @@ def _to_public(app: App) -> AppPublic:
         icon=app.icon,
         url=app.url,
         enabled=app.enabled,
+        staff_only=app.staff_only,
     )
 
 
@@ -41,14 +51,17 @@ def _unique_app_id(db: Session, name: str) -> str:
 
 
 @router.get("", response_model=list[AppPublic])
-def list_apps(db: Session = Depends(get_db)):
-    """Public app catalog — enabled apps only, sorted."""
-    apps = (
-        db.query(App)
-        .filter(App.enabled.is_(True))
-        .order_by(App.sort, App.name)
-        .all()
-    )
+def list_apps(
+    db: Session = Depends(get_db),
+    member: Member = Depends(get_current_member),
+):
+    """Signed-in app catalog — enabled apps only, sorted. Staff-only apps are
+    hidden from membership program holders (apps are their benefit, not
+    operations tooling)."""
+    query = db.query(App).filter(App.enabled.is_(True))
+    if not _is_staff(member):
+        query = query.filter(App.staff_only.is_(False))
+    apps = query.order_by(App.sort, App.name).all()
     return [_to_public(a) for a in apps]
 
 
