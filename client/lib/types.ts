@@ -40,6 +40,7 @@ export interface DirectoryUser {
 }
 
 export interface MemberMe {
+  zitadel_sub: string
   name: string
   email: string
   initials: string

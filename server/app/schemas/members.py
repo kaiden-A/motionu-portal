@@ -32,6 +32,7 @@ class MemberDirectoryItem(MemberPublic):
 class MemberMe(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
+    zitadel_sub: str
     name: str
     email: str
     initials: str

@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import require_cap
-from app.models import Achievement, Member
+from app.dependencies import get_current_member, require_cap
+from app.models import Achievement, Member, Membership
 from app.schemas import (
     AchievementAssign,
     AchievementCreate,
@@ -120,7 +120,7 @@ def set_member_achievements(
     db: Session = Depends(get_db),
     _member: Member = Depends(ACHIEVEMENT_ADMIN),
 ):
-    """Replace the full set of achievements a member holds."""
+    """Replace the full set of achievements a member holds (admin only)."""
     member = db.query(Member).filter(Member.zitadel_sub == zitadel_sub).first()
     if not member:
         raise HTTPException(status_code=404, detail="Member not found in portal")
@@ -133,3 +133,59 @@ def set_member_achievements(
     member.achievements = list(dict.fromkeys(body.keys))
     db.commit()
     return member.achievements
+
+
+@router.post("/members/{zitadel_sub}/give", response_model=list[str])
+def give_achievements(
+    zitadel_sub: str,
+    body: AchievementAssign,
+    db: Session = Depends(get_db),
+    member: Member = Depends(get_current_member),
+):
+    """Any signed-in internal member can give badges to another member.
+
+    Add-only merge — badges are appended, never removed, so concurrent gives
+    cannot clobber each other. No self-give, no membership holders.
+    """
+    if zitadel_sub == member.zitadel_sub:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot give badges to yourself",
+        )
+    if db.query(Membership).filter(Membership.member_sub == member.zitadel_sub).first():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Membership program holders cannot give badges",
+        )
+    target = db.query(Member).filter(Member.zitadel_sub == zitadel_sub).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Member not found in portal")
+    known = {
+        a.key for a in db.query(Achievement).filter(Achievement.enabled.is_(True)).all()
+    }
+    unknown = set(body.keys) - known
+    if unknown:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown or disabled achievements: {sorted(unknown)}",
+        )
+    current = target.achievements or []
+    target.achievements = list(dict.fromkeys([*current, *body.keys]))
+    db.commit()
+    return target.achievements
+
+
+@router.post("/members/{zitadel_sub}/revoke", response_model=list[str])
+def revoke_achievements(
+    zitadel_sub: str,
+    body: AchievementAssign,
+    db: Session = Depends(get_db),
+    _member: Member = Depends(ACHIEVEMENT_ADMIN),
+):
+    """Admin only — remove specific badges from a member."""
+    target = db.query(Member).filter(Member.zitadel_sub == zitadel_sub).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Member not found in portal")
+    target.achievements = [k for k in (target.achievements or []) if k not in set(body.keys)]
+    db.commit()
+    return target.achievements

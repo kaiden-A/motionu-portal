@@ -123,6 +123,7 @@ def me(
         )
 
     return MemberMe(
+        zitadel_sub=member.zitadel_sub,
         name=member.name,
         email=member.email,
         initials=member.initials,

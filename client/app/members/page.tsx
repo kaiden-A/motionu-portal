@@ -28,7 +28,7 @@ export default async function MembersPage() {
             Search by name, or filter by department to see who carries which roles.
           </p>
         </section>
-        <MembersGrid members={members} badges={badges} />
+        <MembersGrid members={members} badges={badges} currentSub={me.zitadel_sub} />
       </div>
     </>
   )

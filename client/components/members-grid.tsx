@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { BadgeTip } from '@/components/badge-tip'
+import { GiveBadgeModal } from '@/components/give-badge-modal'
 import { AppIcon } from '@/components/icon-picker'
 import { ROLE_SHORT, DEPARTMENTS, type Achievement, type MemberDirectoryItem } from '@/lib/types'
 
@@ -16,12 +17,15 @@ const ROLE_DEPT_KEY: Record<string, string> = {
 export function MembersGrid({
   members,
   badges = [],
+  currentSub = null,
 }: {
   members: MemberDirectoryItem[]
   badges?: Achievement[]
+  currentSub?: string | null
 }) {
   const [query, setQuery] = useState('')
   const [dept, setDept] = useState('all')
+  const [givingTo, setGivingTo] = useState<MemberDirectoryItem | null>(null)
 
   const filtered = members.filter((m) => {
     const matchesDept = dept === 'all' || m.dept === dept
@@ -97,6 +101,15 @@ export function MembersGrid({
                     {m.department?.short ?? m.dept}
                   </span>
                 )}
+                {m.zitadel_sub !== currentSub && (
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => setGivingTo(m)}
+                    title={`Give badges to ${m.name}`}
+                  >
+                    <i className="fa-solid fa-award" /> Give
+                  </button>
+                )}
               </div>
             </div>
           )
@@ -104,6 +117,10 @@ export function MembersGrid({
       </div>
       {!filtered.length && (
         <p className="text-faint mt-8">No members match that search.</p>
+      )}
+
+      {givingTo && (
+        <GiveBadgeModal member={givingTo} badges={badges} onClose={() => setGivingTo(null)} />
       )}
     </>
   )

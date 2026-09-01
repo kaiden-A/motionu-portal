@@ -81,6 +81,19 @@ export function AchievementsAdmin({
     if (ok) setSelectedSub('')
   }
 
+  async function revokeSelected() {
+    if (!selectedSub || !selectedKeys.length) return
+    const ok = await mutate(
+      `/api/achievements/members/${encodeURIComponent(selectedSub)}/revoke`,
+      'POST',
+      { keys: selectedKeys }
+    )
+    if (ok) {
+      const m = members.find((x) => x.zitadel_sub === selectedSub)
+      setSelectedKeys([...(m?.achievements ?? [])])
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5" style={{ alignItems: 'start' }}>
       <section className="panel">
@@ -199,6 +212,15 @@ export function AchievementsAdmin({
               <button className="btn btn-primary btn-sm" onClick={saveAssignments} disabled={busy}>
                 {busy ? <span className="spinner" /> : null}
                 {busy ? 'Saving…' : 'Save assignments'}
+              </button>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={revokeSelected}
+                disabled={busy || !selectedKeys.length}
+                style={{ color: 'var(--coral)' }}
+              >
+                {busy ? <span className="spinner" /> : null}
+                Remove checked
               </button>
             </div>
           </>
