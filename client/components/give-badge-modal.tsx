@@ -68,7 +68,7 @@ export function GiveBadgeModal({
             <div className="mini-avatar" data-dept={member.dept ?? ''}>
               {member.initials}
             </div>
-            <div>
+            <div className="min-w-0">
               <div style={{ fontWeight: 700 }}>{member.name}</div>
               <div className="text-faint" style={{ fontSize: '0.8rem' }}>
                 Badges they earn show up on their profile and in the directory.
@@ -88,12 +88,16 @@ export function GiveBadgeModal({
                 <input
                   type="checkbox"
                   checked={selectedKeys.includes(b.key)}
-                  style={{ width: 'auto', minWidth: 0 }}
+                  style={{ width: 'auto', minWidth: 0, flexShrink: 0 }}
                   onChange={() => toggle(b.key)}
                 />
-                <AppIcon icon={b.icon} />
-                <span>{b.label}</span>
-                {b.desc && <span className="text-faint" style={{ fontSize: '0.75rem' }}>{b.desc}</span>}
+                <span style={{ flexShrink: 0, display: 'grid', placeItems: 'center' }}>
+                  <AppIcon icon={b.icon} />
+                </span>
+                <span className="flex-1 min-w-0" style={{ display: 'flex', flexDirection: 'column', gap: 1, lineHeight: 1.35 }}>
+                  <span>{b.label}</span>
+                  {b.desc && <span className="text-faint" style={{ fontSize: '0.75rem' }}>{b.desc}</span>}
+                </span>
               </label>
             ))}
             {!enabledBadges.length && (

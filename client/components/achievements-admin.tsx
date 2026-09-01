@@ -191,7 +191,7 @@ export function AchievementsAdmin({
                     type="checkbox"
                     checked={selectedKeys.includes(b.key)}
                     disabled={!b.enabled}
-                    style={{ width: 'auto', minWidth: 0 }}
+                    style={{ width: 'auto', minWidth: 0, flexShrink: 0 }}
                     onChange={(e) =>
                       setSelectedKeys(
                         e.target.checked
@@ -200,9 +200,13 @@ export function AchievementsAdmin({
                       )
                     }
                   />
-                  <AppIcon icon={b.icon} />
-                  <span>{b.label}</span>
-                  {!b.enabled && <span className="text-faint" style={{ fontSize: '0.72rem' }}>disabled</span>}
+                  <span style={{ flexShrink: 0, display: 'grid', placeItems: 'center' }}>
+                    <AppIcon icon={b.icon} />
+                  </span>
+                  <span className="flex-1 min-w-0" style={{ display: 'flex', flexDirection: 'column', gap: 1, lineHeight: 1.35 }}>
+                    <span>{b.label}</span>
+                    {!b.enabled && <span className="text-faint" style={{ fontSize: '0.72rem' }}>disabled</span>}
+                  </span>
                 </label>
               ))}
               {!badges.length && <p className="text-faint">Create badges first to assign them.</p>}

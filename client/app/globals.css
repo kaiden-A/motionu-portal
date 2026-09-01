@@ -392,11 +392,13 @@
   .modal .assign-form select { @apply w-full min-w-0; }
   .modal .assign-form .form-actions { grid-column: 1 / -1; @apply flex gap-2.5 items-center flex-wrap; }
 
+  .form-actions { @apply flex gap-2.5 items-center flex-wrap; }
+
   @media (max-width: 640px) {
     .modal { max-height: calc(100dvh - 1.5rem); }
     .modal .assign-form { grid-template-columns: 1fr; }
-    .modal .assign-form .form-actions { @apply flex-col items-stretch; }
-    .modal .assign-form .form-actions .btn { width: 100%; }
+    .form-actions { @apply flex-col items-stretch; }
+    .form-actions .btn { width: 100%; }
   }
   @keyframes modalFade { from { opacity: 0; } }
   @keyframes modalRise { from { opacity: 0; transform: translateY(12px); } }
