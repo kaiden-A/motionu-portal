@@ -152,7 +152,7 @@
   .lede { @apply text-[clamp(1.05rem,1.4vw,1.25rem)] text-dim font-normal max-w-[46ch]; }
 
   /* Layout */
-  .wrap { @apply mx-auto px-7 max-w-[var(--container)]; }
+  .wrap { @apply mx-auto px-5 sm:px-7 max-w-[var(--container)]; }
   .section { @apply py-24; }
   .section--tight { @apply py-14; }
   .section--alt { @apply bg-ink-soft border-y border-line; }
@@ -211,11 +211,17 @@
     @apply hidden fixed top-3.5 left-3.5 z-[60] w-10 h-10 border border-line rounded-sm bg-surface text-text;
   }
 
+  .nav-backdrop {
+    @apply hidden fixed inset-0 z-[55] bg-black/55;
+  }
+
   @media (max-width: 900px) {
     body.has-sidebar { padding-left: 0; }
+    body.is-nav-open { overflow: hidden; }
     .site-sidebar { transform: translateX(-100%); }
-    body.is-nav-open .site-sidebar { transform: translateX(0); box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.55); }
+    body.is-nav-open .site-sidebar { transform: translateX(0); }
     .nav-toggle { @apply grid place-items-center; }
+    .nav-backdrop { @apply block; }
   }
 
   /* Buttons */
@@ -230,6 +236,16 @@
   .btn-ghost:hover { @apply border-dim; }
   .btn-sm { @apply px-4 py-[9px] text-[0.78rem]; }
   .btn-block { @apply w-full; }
+
+  /* Touch-first: bigger tap targets, and no iOS auto-zoom on focus (Safari
+     zooms into any input rendered below 16px). */
+  @media (pointer: coarse) {
+    .search-box input { font-size: 16px; }
+    .btn { min-height: 44px; }
+    .btn-sm { min-height: 40px; }
+    .chip { min-height: 36px; }
+    .nav-toggle { @apply w-11 h-11; }
+  }
 
   /* Loading */
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -246,7 +262,7 @@
   }
 
   .page-loader {
-    @apply min-h-screen grid place-items-center p-6;
+    @apply min-h-dvh grid place-items-center p-6;
     background: var(--color-ink);
   }
   .page-loader__inner { @apply flex flex-col items-center gap-4; }
@@ -351,20 +367,22 @@
 
   /* Modal */
   .modal-overlay {
-    @apply fixed inset-0 z-[70] grid place-items-center p-6;
+    @apply fixed inset-0 z-[70] flex flex-col overflow-y-auto p-3 sm:p-6;
     background: rgba(8, 10, 14, 0.66);
     animation: modalFade 0.2s var(--ease-soft);
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
   .modal {
-    @apply w-full max-w-[720px] max-h-[86vh] flex flex-col bg-surface border border-line rounded-lg;
+    @apply w-full max-w-[720px] max-h-[86vh] max-h-[calc(100dvh-3rem)] my-auto flex flex-col bg-surface border border-line rounded-lg;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
     animation: modalRise 0.25s var(--ease-soft);
   }
   .modal--wide { max-width: 960px; }
-  .modal__head { @apply flex items-center justify-between gap-3 px-6 py-5 border-b border-line; }
-  .modal__body { @apply p-6 overflow-y-auto; }
+  .modal__head { @apply flex items-center justify-between gap-3 px-5 py-4 sm:px-6 sm:py-5 border-b border-line; }
+  .modal__body { @apply p-5 sm:p-6 overflow-y-auto; }
   .modal__close {
-    @apply w-[34px] h-[34px] rounded-sm grid place-items-center text-faint border border-line;
+    @apply w-[38px] h-[38px] rounded-sm grid place-items-center text-faint border border-line shrink-0;
     transition: color 0.2s var(--ease-soft), border-color 0.2s var(--ease-soft);
   }
   .modal__close:hover { @apply text-coral border-coral-dim; }
@@ -373,6 +391,13 @@
   .modal .assign-form input,
   .modal .assign-form select { @apply w-full min-w-0; }
   .modal .assign-form .form-actions { grid-column: 1 / -1; @apply flex gap-2.5 items-center flex-wrap; }
+
+  @media (max-width: 640px) {
+    .modal { max-height: calc(100dvh - 1.5rem); }
+    .modal .assign-form { grid-template-columns: 1fr; }
+    .modal .assign-form .form-actions { @apply flex-col items-stretch; }
+    .modal .assign-form .form-actions .btn { width: 100%; }
+  }
   @keyframes modalFade { from { opacity: 0; } }
   @keyframes modalRise { from { opacity: 0; transform: translateY(12px); } }
 
@@ -431,7 +456,7 @@
 
   /* The ID Badge (signature component) */
   .id-badge {
-    @apply relative w-[300px] rounded-[22px] border border-line p-[22px_22px_26px] overflow-hidden;
+    @apply relative w-full max-w-[300px] rounded-[22px] border border-line p-[22px_22px_26px] overflow-hidden;
     background: linear-gradient(155deg, var(--color-surface-2), var(--color-surface));
     isolation: isolate;
   }
@@ -582,8 +607,19 @@
   .data-table tr:last-child td { border-bottom: none; }
   .data-table tr:hover td { @apply bg-surface; }
 
-  .table-scroll { @apply overflow-x-auto border border-line rounded-lg; }
+  .table-scroll { @apply overflow-x-auto border border-line rounded-lg bg-surface; }
   .table-scroll .data-table { min-width: 760px; }
+  .table-scroll th:first-child,
+  .table-scroll td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--color-surface);
+    box-shadow: 1px 0 0 var(--color-line);
+  }
+  .table-scroll th:first-child { z-index: 3; }
+  .table-scroll td:first-child { z-index: 2; }
+  .table-scroll tr:hover td:first-child { background: var(--color-surface); }
+  .table-scroll .assign-row td:first-child { background: var(--color-ink-soft); }
   .session-note { @apply text-[0.78rem] text-faint; }
 
   .assign-row { @apply bg-ink-soft; }
@@ -611,7 +647,7 @@
   .footer-depts { @apply flex gap-3.5 flex-wrap; }
 
   /* Auth / login */
-  .auth-body { @apply min-h-screen grid place-items-center p-6; }
+  .auth-body { @apply min-h-dvh grid place-items-center p-6; }
   .auth-shell { @apply grid grid-cols-2 gap-14 items-center max-w-[880px] w-full; }
   .auth-card { @apply bg-surface border border-line rounded-lg p-10; }
   .auth-brand { @apply flex items-center gap-3; }
@@ -635,7 +671,7 @@
   }
 
   /* Public card page */
-  .public-body { @apply min-h-screen grid place-items-center p-4 sm:p-8; }
+  .public-body { @apply min-h-dvh grid place-items-center p-4 sm:p-8; }
   .public-shell { @apply max-w-[520px] w-full text-center; }
   .public-card-frame {
     @apply bg-surface border border-line rounded-lg p-9 flex flex-col items-center gap-5;

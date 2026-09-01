@@ -25,14 +25,19 @@ export function Sidebar({ me }: { me: MemberMe }) {
 
   useEffect(() => {
     document.body.classList.toggle('has-sidebar', true)
-    if (open) {
-      document.body.classList.add('is-nav-open')
-    } else {
-      document.body.classList.remove('is-nav-open')
-    }
+    document.body.classList.toggle('is-nav-open', open)
     return () => {
       document.body.classList.remove('has-sidebar', 'is-nav-open')
     }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [open])
 
   const caps = new Set(me.caps ?? [])
@@ -53,6 +58,13 @@ export function Sidebar({ me }: { me: MemberMe }) {
       >
         <i className="fa-solid fa-bars" />
       </button>
+      {open && (
+        <button
+          className="nav-backdrop"
+          aria-label="Close menu"
+          onClick={() => setOpen(false)}
+        />
+      )}
       <aside className="site-sidebar">
         <Link href="/profile" className="brand sidebar-brand">
           <span className="brand-mark">
