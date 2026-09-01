@@ -15,6 +15,7 @@ from app.dependencies import (
 )
 from app.models import Card, Department, Member, Membership, MembershipPlan
 from app.schemas import (
+    CardPrefsUpdate,
     CardPublic,
     MemberDirectoryItem,
     MemberMe,
@@ -93,6 +94,8 @@ def me(
                 "roles": member.roles or [],
                 "is_active": member.is_active,
                 "achievements": member.achievements or [],
+                "card_skin": member.card_skin or "classic",
+                "card_accent": member.card_accent,
                 "member_since": member.member_since.isoformat() if member.member_since else None,
                 "department": dept,
             },
@@ -133,6 +136,23 @@ def me(
         is_admin=is_admin,
         caps=sorted(member_caps(member)),
         achievements=member.achievements or [],
+        card_skin=member.card_skin or "classic",
+        card_accent=member.card_accent,
         card=card_public,
         membership=membership,
     )
+
+
+@router.patch("/me/card-prefs", response_model=CardPrefsUpdate)
+def update_card_prefs(
+    body: CardPrefsUpdate,
+    db: Session = Depends(get_db),
+    member: Member = Depends(get_current_member),
+):
+    """Member updates their own card design — skin key + optional accent hex."""
+    if body.skin is not None:
+        member.card_skin = body.skin
+    member.card_accent = body.accent
+    db.commit()
+    db.refresh(member)
+    return CardPrefsUpdate(skin=member.card_skin or "classic", accent=member.card_accent)

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ClaimButton } from '@/components/claim-button'
+import { CredentialCard } from '@/components/credential-card'
 import { StatusPill } from '@/components/badge'
-import { LanyardCard } from '@/components/lanyard-card'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { backendFetch } from '@/lib/backend'
 import { getSession } from '@/lib/session'
@@ -41,12 +41,14 @@ export default async function PublicCardPage({
     <body className="public-body">
       <ThemeToggle floating />
       <main
-        className="public-shell flex flex-col gap-6"
+        className="public-shell flex flex-col gap-6 items-center"
         style={{ justifyContent: 'center', minHeight: '100dvh' }}
       >
         {card.assigned && card.member && card.member.is_active !== false ? (
           <>
-            <LanyardCard
+            <CredentialCard
+              skin={card.member.card_skin}
+              accent={card.member.card_accent}
               member={card.member}
               uid={card.uid}
               deptKey={card.member.dept}

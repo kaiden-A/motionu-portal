@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { BadgeTip } from '@/components/badge-tip'
 import { AppIcon } from '@/components/icon-picker'
 import { ROLE_SHORT, type Achievement, type MemberPublic } from '@/lib/types'
@@ -22,12 +23,14 @@ export function LanyardCard({
   deptKey,
   lastTap,
   badges = [],
+  accent = null,
 }: {
   member: MemberPublic
   uid?: string | null
   deptKey?: string | null
   lastTap?: string | null
   badges?: Achievement[]
+  accent?: string | null
 }) {
   const dept = deptKey ?? member.dept ?? undefined
   // Access scopes = roles beyond the base `member` grant, beyond the
@@ -48,7 +51,11 @@ export function LanyardCard({
     : null
 
   return (
-    <div className="lanyard-card" data-dept={dept ?? ''}>
+    <div
+      className="lanyard-card"
+      data-dept={dept ?? ''}
+      style={accent ? ({ '--dept-color': accent } as CSSProperties) : undefined}
+    >
       <div className="lanyard-card__punch" />
       <div className="lanyard-card__body">
         <div className="lanyard-card__row-top">

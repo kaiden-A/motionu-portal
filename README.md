@@ -59,6 +59,9 @@ see below).
   by the signed-in member.
 - `/profile` shows the digital credential; the public card page renders the
   shareable lanyard card with no auth.
+- **Customizable design:** members pick a card **skin** (Classic / Lanyard /
+  Minimal) and an **accent color** on `/profile` (`PATCH /members/me/card-prefs`)
+  — it renders on their profile and on their public card page.
 
 ### News & Events (`/news`)
 - News feed (pinned first) + upcoming events rail.
@@ -163,6 +166,7 @@ Migrations are in `server/alembic/versions/`:
 | `0003` | members.is_active, news, events |
 | `0004` | apps simplify, achievements |
 | `0005` | membership_plans, memberships, apps.staff_only |
+| `0006` | members.card_skin, members.card_accent (customizable card design) |
 
 **Rule:** migrations run locally/CI only — never inside the serving container.
 `npm run migrate` before deploying.

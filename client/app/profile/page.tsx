@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/sidebar'
-import { IdBadge, Achievement, StatusPill, DeptTag, RoleChips } from '@/components/badge'
+import { CardCustomizeButton } from '@/components/card-customize-modal'
+import { CredentialCard } from '@/components/credential-card'
+import { Achievement, StatusPill, DeptTag, RoleChips } from '@/components/badge'
 import { backendFetch, BackendError } from '@/lib/backend'
 import { getAccessToken } from '@/lib/backend'
 import type { Achievement as AchievementDef, MemberMe } from '@/lib/types'
@@ -43,9 +45,14 @@ export default async function ProfilePage() {
 
         <section style={{ marginTop: 40 }} className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="panel" style={{ alignSelf: 'start' }}>
-            <span className="eyebrow">Digital card</span>
+            <div className="flex items-center justify-between gap-3" style={{ flexWrap: 'wrap' }}>
+              <span className="eyebrow">Digital card</span>
+              <CardCustomizeButton me={me} badges={earned} />
+            </div>
             <div className="mt-4 flex" style={{ justifyContent: 'center' }}>
-              <IdBadge
+              <CredentialCard
+                skin={me.card_skin}
+                accent={me.card_accent}
                 member={me}
                 uid={me.card?.uid ?? null}
                 tilt

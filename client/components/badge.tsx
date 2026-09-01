@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { BadgeTip } from '@/components/badge-tip'
 import { AppIcon } from '@/components/icon-picker'
 import { ROLE_SHORT, type Achievement, type MemberPublic } from '@/lib/types'
@@ -43,6 +44,7 @@ export function IdBadge({
   tilt = false,
   deptKey,
   badges = [],
+  accent = null,
 }: {
   member: MemberPublic
   uid?: string | null
@@ -50,13 +52,18 @@ export function IdBadge({
   tilt?: boolean
   deptKey?: string | null
   badges?: Achievement[]
+  accent?: string | null
 }) {
   const dept = deptKey ?? member.dept ?? undefined
   const sizeClass = size === 'sm' ? 'id-badge--sm' : ''
   const tiltClass = tilt ? 'id-badge--tilt' : ''
 
   return (
-    <div className={`id-badge ${sizeClass} ${tiltClass}`} data-dept={dept ?? ''}>
+    <div
+      className={`id-badge ${sizeClass} ${tiltClass}`}
+      data-dept={dept ?? ''}
+      style={accent ? ({ '--dept-color': accent } as CSSProperties) : undefined}
+    >
       {size !== 'sm' && <div className="id-badge__punch" />}
       <div className="id-badge__row-top">
         <span className="id-badge__org">MOTION-U</span>

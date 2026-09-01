@@ -20,6 +20,8 @@ class Member(Base):
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     achievements: Mapped[list] = mapped_column(JSON, default=list)
+    card_skin: Mapped[str] = mapped_column(String(32), default="classic")
+    card_accent: Mapped[str | None] = mapped_column(String(16), nullable=True)
     member_since: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

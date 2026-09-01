@@ -13,6 +13,7 @@ from app.schemas.cards import (
     DirectoryUser,
 )
 from app.schemas.members import (
+    CardPrefsUpdate,
     DepartmentPublic,
     MemberDirectoryItem,
     MemberMe,
@@ -63,6 +64,7 @@ __all__ = [
     "CardAdmin",
     "CardAssignRequest",
     "CardCreate",
+    "CardPrefsUpdate",
     "CardPublic",
     "DepartmentPublic",
     "DirectoryUser",

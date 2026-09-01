@@ -12,6 +12,8 @@ export interface MemberPublic {
   roles: string[]
   is_active?: boolean
   achievements: string[]
+  card_skin?: string
+  card_accent?: string | null
   member_since?: string | null
   department?: Department | null
 }
@@ -50,9 +52,20 @@ export interface MemberMe {
   is_admin: boolean
   caps: string[]
   achievements: string[]
+  card_skin?: string
+  card_accent?: string | null
   card?: CardPublic | null
   membership?: MembershipMe | null
 }
+
+export interface CardPrefs {
+  skin: string
+  accent: string | null
+}
+
+export const DEFAULT_CARD_SKIN = 'classic'
+export const CARD_SKIN_IDS = ['classic', 'lanyard', 'minimal'] as const
+export type CardSkinId = (typeof CARD_SKIN_IDS)[number]
 
 export const CAPS = {
   manageUsers: 'manage_users',

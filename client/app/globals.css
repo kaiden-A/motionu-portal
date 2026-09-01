@@ -580,6 +580,75 @@
   .lanyard-card__uid { @apply font-mono text-[0.7rem] sm:text-[0.74rem] text-faint; }
   .lanyard-card__nfc { @apply flex items-center gap-1.5 font-mono text-[0.62rem] uppercase tracking-[0.08em] text-faint; }
 
+  /* Minimal card skin — flat, one accent line */
+  .minimal-card {
+    @apply relative w-full max-w-[300px] rounded-[20px] border border-line bg-surface overflow-hidden text-center;
+    isolation: isolate;
+  }
+  .minimal-card__bar { @apply h-1.5; background: var(--dept-color, var(--color-royal)); }
+  .minimal-card__body { @apply px-6 pb-6 pt-5 flex flex-col items-center; }
+  .minimal-card__org { @apply font-mono text-[0.6rem] tracking-[0.2em] text-faint uppercase; }
+  .minimal-card__photo {
+    @apply w-16 h-16 rounded-full grid place-items-center font-display font-extrabold text-[1.4rem] mt-4 mb-3;
+    background: color-mix(in srgb, var(--dept-color, var(--color-royal)) 18%, transparent);
+    color: var(--dept-color, var(--color-royal));
+  }
+  .minimal-card__name { @apply font-display font-extrabold text-[1.3rem] uppercase leading-[1.02]; }
+  .minimal-card__role { @apply mt-1 text-[0.8rem] text-dim; }
+  .minimal-card__badges { @apply flex items-center justify-center gap-2 mt-3 flex-wrap; }
+  .minimal-card__badge {
+    @apply w-7 h-7 rounded-full grid place-items-center text-dim;
+    background: var(--color-surface-3);
+    font-size: 0.75rem;
+  }
+  .minimal-card__footer { @apply mt-5 pt-3 border-t border-dashed border-line w-full; }
+  .minimal-card__uid { @apply font-mono text-[0.68rem] text-faint; }
+
+  /* Card customize modal — live preview + skin/accent pickers */
+  .card-preview {
+    @apply flex flex-col items-center justify-center h-[340px] rounded-lg border border-line bg-ink-soft overflow-hidden p-4;
+  }
+  .card-preview > .id-badge,
+  .card-preview > .minimal-card { margin: 0 auto; }
+
+  .card-skin-row { @apply flex gap-3 flex-wrap; }
+  .card-skin-thumb {
+    @apply relative flex flex-col items-center gap-2 w-[108px] p-2 rounded-md border border-line bg-surface-2 cursor-pointer;
+    transition: border-color 0.2s var(--ease-soft);
+  }
+  .card-skin-thumb:hover { @apply border-dim; }
+  .card-skin-thumb.is-active {
+    @apply border-royal;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-royal) 30%, transparent);
+  }
+  .card-skin-thumb__stage {
+    @apply relative w-full overflow-hidden rounded-sm bg-ink;
+    height: 150px;
+  }
+  .card-skin-thumb__scale {
+    @apply absolute top-0 left-0 flex flex-col;
+    width: 300px;
+    height: 460px;
+    transform: scale(0.29);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+  .card-skin-thumb__label { @apply font-mono text-[0.62rem] uppercase tracking-[0.08em] text-dim; }
+
+  .accent-row { @apply flex items-center gap-2.5 flex-wrap; }
+  .accent-swatch {
+    @apply w-9 h-9 rounded-full border border-line grid place-items-center text-faint shrink-0;
+    background: var(--color-surface-3);
+    transition: transform 0.15s var(--ease-soft), border-color 0.15s var(--ease-soft);
+  }
+  .accent-swatch:hover { @apply border-dim; transform: scale(1.08); }
+  .accent-swatch.is-active { @apply border-text; box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-text) 30%, transparent); }
+  .accent-custom { @apply flex items-center gap-2; }
+  .accent-custom__input {
+    @apply w-[110px] bg-surface-2 border border-line rounded-sm px-3 py-2 text-text font-mono text-[0.85rem];
+  }
+  .accent-custom__input:focus { @apply border-royal; }
+
   /* Theme toggle */
   .theme-toggle {
     @apply w-[38px] h-[38px] rounded-xl grid place-items-center text-faint border border-line shrink-0;
