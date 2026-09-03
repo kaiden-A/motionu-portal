@@ -118,7 +118,13 @@ def get_current_member(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing subject"
         )
-    return get_or_create_member(db, sub)
+    member = get_or_create_member(db, sub)
+    picture = payload.get("picture")
+    if isinstance(picture, str) and picture and picture != member.avatar_url:
+        member.avatar_url = picture
+        db.commit()
+        db.refresh(member)
+    return member
 
 
 def get_admin_member(

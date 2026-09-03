@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { MembershipAddButton, MembershipEditButton, PlansManageButton } from '@/components/membership-actions'
 import { MembershipCardSelect } from '@/components/membership-card-select'
 import { Sidebar } from '@/components/sidebar'
+import { Avatar } from '@/components/avatar'
 import { MembershipStatusPill } from '@/components/badge'
 import { backendFetch } from '@/lib/backend'
 import { getAccessToken } from '@/lib/backend'
@@ -117,9 +118,11 @@ export default async function MembershipsPage({
                 <tr key={m.id}>
                   <td>
                     <div className="flex items-center gap-2">
-                      <div className="mini-avatar" data-dept="">
-                        {(m.name.match(/\b\w/g) ?? []).slice(0, 2).join('').toUpperCase() || 'MU'}
-                      </div>
+                      <Avatar
+                        className="mini-avatar"
+                        name={m.name}
+                        avatarUrl={m.avatar_url}
+                      />
                       <div>
                         <div style={{ fontWeight: 600 }}>{m.name}</div>
                         <div className="uid-tag">{m.email}</div>

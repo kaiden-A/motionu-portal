@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { Avatar } from '@/components/avatar'
 import { CAPS, type MemberMe } from '@/lib/types'
 
 const NAV_LINKS = [
@@ -90,7 +91,13 @@ export function Sidebar({ me }: { me: MemberMe }) {
         </nav>
         <div className="sidebar-foot">
           <Link href="/profile" className="sidebar-user" data-dept={me.dept ?? ''}>
-            <span className="sidebar-user__avatar">{me.initials}</span>
+            <Avatar
+              className="sidebar-user__avatar"
+              name={me.name}
+              initials={me.initials}
+              avatarUrl={me.avatar_url}
+              dept={me.dept}
+            />
             <span className="sidebar-user__meta">
               <span className="sidebar-user__name">{me.name}</span>
               <span className="sidebar-user__role">{me.role || 'Member'}</span>

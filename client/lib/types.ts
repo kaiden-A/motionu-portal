@@ -7,6 +7,7 @@ export interface Department {
 export interface MemberPublic {
   name: string
   initials: string
+  avatar_url?: string | null
   dept?: string | null
   role?: string | null
   roles: string[]
@@ -46,6 +47,7 @@ export interface MemberMe {
   name: string
   email: string
   initials: string
+  avatar_url?: string | null
   dept?: string | null
   role?: string | null
   roles: string[]
@@ -131,6 +133,7 @@ export interface MembershipAdmin {
   notes?: string | null
   name: string
   email: string
+  avatar_url?: string | null
   card_id?: string | null
   plan?: MembershipPlan | null
 }

@@ -20,6 +20,7 @@ class MemberPublic(BaseModel):
 
     name: str
     initials: str
+    avatar_url: str | None = None
     dept: str | None = None
     role: str | None = None
     roles: list[str] = []
@@ -42,6 +43,7 @@ class MemberMe(BaseModel):
     name: str
     email: str
     initials: str
+    avatar_url: str | None = None
     dept: str | None = None
     role: str | None = None
     roles: list[str] = []

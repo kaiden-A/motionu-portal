@@ -42,6 +42,7 @@ def _to_public(db: Session, card: Card) -> CardPublic:
             {
                 "name": member.name,
                 "initials": member.initials,
+                "avatar_url": member.avatar_url,
                 "dept": member.dept,
                 "role": member.role,
                 "roles": member.roles or [],

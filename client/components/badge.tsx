@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { Avatar } from '@/components/avatar'
 import { BadgeTip } from '@/components/badge-tip'
 import { AppIcon } from '@/components/icon-picker'
 import { ROLE_SHORT, type Achievement, type MemberPublic } from '@/lib/types'
@@ -71,7 +72,13 @@ export function IdBadge({
           {(member.department?.short ?? dept ?? 'MEMBER').toUpperCase()}
         </span>
       </div>
-      <div className="id-badge__photo">{member.initials || 'MU'}</div>
+      <Avatar
+        className="id-badge__photo"
+        name={member.name}
+        initials={member.initials || 'MU'}
+        avatarUrl={member.avatar_url}
+        dept={dept}
+      />
       <div className="id-badge__name">{member.name}</div>
       <div className="id-badge__role">{member.role || 'Member'}</div>
       <RoleChips roles={member.roles} />

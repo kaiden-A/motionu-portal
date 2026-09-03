@@ -93,6 +93,7 @@ def _card_public(db: Session, member: Member) -> CardPublic | None:
         member={
             "name": member.name,
             "initials": member.initials,
+            "avatar_url": member.avatar_url,
             "dept": member.dept,
             "role": member.role,
             "roles": member.roles or [],
@@ -121,6 +122,7 @@ def _to_admin(db: Session, m: Membership) -> MembershipAdmin:
         notes=m.notes,
         name=member.name if member else "Unknown",
         email=member.email if member else "",
+        avatar_url=member.avatar_url if member else None,
         card_id=card.card_id if card else None,
         plan=_to_plan(plan) if plan else None,
     )

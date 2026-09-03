@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { Avatar } from '@/components/avatar'
 import { AppIcon } from '@/components/icon-picker'
 import type { Achievement, MemberDirectoryItem } from '@/lib/types'
 
@@ -65,9 +66,13 @@ export function GiveBadgeModal({
         </div>
         <div className="modal__body">
           <div className="mb-4 flex items-center gap-2">
-            <div className="mini-avatar" data-dept={member.dept ?? ''}>
-              {member.initials}
-            </div>
+            <Avatar
+              className="mini-avatar"
+              name={member.name}
+              initials={member.initials}
+              avatarUrl={member.avatar_url}
+              dept={member.dept}
+            />
             <div className="min-w-0">
               <div style={{ fontWeight: 700 }}>{member.name}</div>
               <div className="text-faint" style={{ fontSize: '0.8rem' }}>

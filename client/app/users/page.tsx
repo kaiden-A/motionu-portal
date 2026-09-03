@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { UsersManageModal, UserRowActions } from '@/components/users-manage-modal'
 import { Sidebar } from '@/components/sidebar'
+import { Avatar } from '@/components/avatar'
 import { backendFetch } from '@/lib/backend'
 import { getAccessToken } from '@/lib/backend'
 import { CAPS, ROLE_SHORT, type MemberMe, type PortalUser } from '@/lib/types'
@@ -76,9 +77,11 @@ export default async function UsersPage() {
                 <tr key={u.id}>
                   <td>
                     <div className="flex items-center gap-2">
-                      <div className="mini-avatar" data-dept={u.dept ?? ''}>
-                        {(u.name || '?').split(' ').map((p) => p[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()}
-                      </div>
+                      <Avatar
+                        className="mini-avatar"
+                        name={u.name}
+                        dept={u.dept}
+                      />
                       {u.name}
                     </div>
                   </td>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Avatar } from '@/components/avatar'
 import { BadgeTip } from '@/components/badge-tip'
 import { GiveBadgeModal } from '@/components/give-badge-modal'
 import { AppIcon } from '@/components/icon-picker'
@@ -69,7 +70,13 @@ export function MembersGrid({
             .filter((b): b is Achievement => !!b)
           return (
             <div key={m.zitadel_sub ?? m.name} className="member-row" data-dept={m.dept ?? ''}>
-              <div className="member-row__avatar">{m.initials}</div>
+              <Avatar
+                className="member-row__avatar"
+                name={m.name}
+                initials={m.initials}
+                avatarUrl={m.avatar_url}
+                dept={m.dept}
+              />
               <div className="member-row__body">
                 <div className="member-row__name">{m.name}</div>
                 <div className="member-row__roles">

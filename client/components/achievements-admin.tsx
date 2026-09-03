@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { Avatar } from '@/components/avatar'
 import { AppIcon, IconPicker } from '@/components/icon-picker'
 import type { Achievement, MemberDirectoryItem } from '@/lib/types'
 
@@ -174,9 +175,13 @@ export function AchievementsAdmin({
         {selectedMember ? (
           <>
             <div className="mt-4 flex items-center gap-2">
-              <div className="mini-avatar" data-dept={selectedMember.dept ?? ''}>
-                {selectedMember.initials}
-              </div>
+              <Avatar
+                className="mini-avatar"
+                name={selectedMember.name}
+                initials={selectedMember.initials}
+                avatarUrl={selectedMember.avatar_url}
+                dept={selectedMember.dept}
+              />
               <span style={{ fontWeight: 700 }}>{selectedMember.name}</span>
             </div>
 

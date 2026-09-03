@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { AssignSelect } from '@/components/assign-select'
 import { RegisterCardForm } from '@/components/register-card-form'
 import { Sidebar } from '@/components/sidebar'
+import { Avatar } from '@/components/avatar'
 import { StatusPill, DeptTag } from '@/components/badge'
 import { backendFetch } from '@/lib/backend'
 import { getAccessToken } from '@/lib/backend'
@@ -84,12 +85,13 @@ export default async function CardsPage() {
                   <td>
                     {c.member ? (
                       <div className="flex items-center gap-2">
-                        <div
+                        <Avatar
                           className="mini-avatar"
-                          data-dept={c.member.dept ?? ''}
-                        >
-                          {c.member.initials}
-                        </div>
+                          name={c.member.name}
+                          initials={c.member.initials}
+                          avatarUrl={c.member.avatar_url}
+                          dept={c.member.dept}
+                        />
                         {c.member.name}
                       </div>
                     ) : (

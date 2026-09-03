@@ -92,5 +92,6 @@ class MembershipMe(BaseModel):
 class MembershipAdmin(MembershipPublic):
     name: str
     email: str
+    avatar_url: str | None = None
     card_id: str | None = None
     plan: MembershipPlanPublic | None = None

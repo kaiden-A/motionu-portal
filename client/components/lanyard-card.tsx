@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { Avatar } from '@/components/avatar'
 import { BadgeTip } from '@/components/badge-tip'
 import { AppIcon } from '@/components/icon-picker'
 import { ROLE_SHORT, type Achievement, type MemberPublic } from '@/lib/types'
@@ -66,7 +67,13 @@ export function LanyardCard({
         </div>
 
         <div className="lanyard-card__main">
-          <div className="lanyard-card__photo">{member.initials || 'MU'}</div>
+          <Avatar
+            className="lanyard-card__photo"
+            name={member.name}
+            initials={member.initials || 'MU'}
+            avatarUrl={member.avatar_url}
+            dept={dept}
+          />
           <div className="lanyard-card__name">{member.name}</div>
           <div className="lanyard-card__role">{member.role || 'Member'}</div>
           {scopes.length > 0 && (

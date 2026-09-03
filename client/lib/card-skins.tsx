@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { Avatar } from '@/components/avatar'
 import { IdBadge } from '@/components/badge'
 import { LanyardCard } from '@/components/lanyard-card'
 import { AppIcon } from '@/components/icon-picker'
@@ -32,7 +33,13 @@ function MinimalCard({ member, uid, deptKey, badges, accent }: CardSkinProps) {
       <div className="minimal-card__bar" />
       <div className="minimal-card__body">
         <span className="minimal-card__org">MOTION-U</span>
-        <div className="minimal-card__photo">{member.initials || 'MU'}</div>
+        <Avatar
+          className="minimal-card__photo"
+          name={member.name}
+          initials={member.initials || 'MU'}
+          avatarUrl={member.avatar_url}
+          dept={dept}
+        />
         <div className="minimal-card__name">{member.name}</div>
         <div className="minimal-card__role">{member.role || 'Member'}</div>
         {badges && badges.length > 0 && (

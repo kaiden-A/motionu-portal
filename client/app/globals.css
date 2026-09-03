@@ -705,6 +705,14 @@
     color: var(--dept-color, var(--color-royal));
   }
 
+  /* Avatar photos — a Google profile picture replaces the initials chip.
+     The image is clipped by .avatar's overflow and fills the slot exactly. */
+  .avatar { @apply overflow-hidden; }
+  .avatar-img {
+    @apply block w-full h-full object-cover;
+    background: var(--color-surface-3);
+  }
+
   /* Achievement */
   .achievement { @apply flex items-center gap-3.5 px-4 py-3.5 bg-surface border border-line rounded-md; }
   .achievement__icon { @apply text-[1.1rem] w-10 h-10 rounded-[11px] bg-surface-2 grid place-items-center shrink-0 text-royal; }

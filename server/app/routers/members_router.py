@@ -37,6 +37,7 @@ def _to_directory_item(db: Session, member: Member) -> MemberDirectoryItem:
     return MemberDirectoryItem(
         name=member.name,
         initials=member.initials,
+        avatar_url=member.avatar_url,
         dept=member.dept,
         role=member.role,
         roles=member.roles or [],
@@ -89,6 +90,7 @@ def me(
             member={
                 "name": member.name,
                 "initials": member.initials,
+                "avatar_url": member.avatar_url,
                 "dept": member.dept,
                 "role": member.role,
                 "roles": member.roles or [],
@@ -130,6 +132,7 @@ def me(
         name=member.name,
         email=member.email,
         initials=member.initials,
+        avatar_url=member.avatar_url,
         dept=member.dept,
         role=member.role,
         roles=member.roles or [],
