@@ -15,6 +15,7 @@ from app.dependencies import (
 )
 from app.models import Card, Department, Member, Membership, MembershipPlan
 from app.schemas import (
+    AvatarSyncUpdate,
     CardPrefsUpdate,
     CardPublic,
     MemberDirectoryItem,
@@ -133,6 +134,7 @@ def me(
         email=member.email,
         initials=member.initials,
         avatar_url=member.avatar_url,
+        avatar_synced_url=member.avatar_synced_url,
         dept=member.dept,
         role=member.role,
         roles=member.roles or [],
@@ -144,6 +146,20 @@ def me(
         card=card_public,
         membership=membership,
     )
+
+
+@router.patch("/me/avatar-sync")
+def mark_avatar_synced(
+    body: AvatarSyncUpdate,
+    db: Session = Depends(get_db),
+    member: Member = Depends(get_current_member),
+):
+    """Record that the given Google picture was uploaded to ZITADEL as the
+    member's avatar — prevents re-uploading on every login."""
+    if body.url and body.url.startswith("https://") and body.url == member.avatar_url:
+        member.avatar_synced_url = body.url
+        db.commit()
+    return {"ok": True, "synced_url": member.avatar_synced_url}
 
 
 @router.patch("/me/card-prefs", response_model=CardPrefsUpdate)

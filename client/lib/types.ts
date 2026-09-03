@@ -48,6 +48,7 @@ export interface MemberMe {
   email: string
   initials: string
   avatar_url?: string | null
+  avatar_synced_url?: string | null
   dept?: string | null
   role?: string | null
   roles: string[]

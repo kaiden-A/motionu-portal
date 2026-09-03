@@ -12,6 +12,7 @@ from app.routers import (
     memberships_router,
     news_router,
     users_router,
+    zitadel_webhook_router,
 )
 
 app = FastAPI(title="Motion-U Portal API", version="0.1.0")
@@ -31,6 +32,7 @@ app.include_router(members_router.router)
 app.include_router(memberships_router.router)
 app.include_router(news_router.router)
 app.include_router(users_router.router)
+app.include_router(zitadel_webhook_router.router)
 
 
 @app.get("/api/v1/healthz")

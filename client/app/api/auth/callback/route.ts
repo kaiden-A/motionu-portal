@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { syncZitadelAvatar } from '@/lib/avatar-sync'
 import {
   createSessionToken,
   exchangeCodeForTokens,
@@ -83,6 +84,10 @@ export async function GET(request: NextRequest) {
   })
 
   response.cookies.delete('oidc-state')
+
+  // Best-effort: upload the Google profile picture (captured by the
+  // idp-intent webhook) as the user's ZITADEL avatar. Never blocks login.
+  await syncZitadelAvatar(session.access_token)
 
   return response
 }

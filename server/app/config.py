@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     zitadel_allowed_org_id: str
     zitadel_required_roles: list[str] = ["member", "membership"]
     bot_token: str
+    zitadel_actions_signing_key: str = ""
     cors_origins: str = "http://localhost:3000"
 
 

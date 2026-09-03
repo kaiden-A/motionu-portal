@@ -75,6 +75,9 @@ export async function buildAuthorizeUrl(
       `urn:zitadel:iam:org:id:${ALLOWED_ORG_ID}`,
       'urn:zitadel:iam:user:resourceowner',
       'urn:zitadel:iam:org:project:roles',
+      // Lets the user's access token call ZITADEL's own APIs (assets upload
+      // for the Google profile picture → shared avatar across systems).
+      'urn:zitadel:iam:org:project:id:zitadel:aud',
     ].join(' '),
     state,
     nonce,

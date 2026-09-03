@@ -15,6 +15,7 @@ class Member(Base):
     email: Mapped[str] = mapped_column(String(255))
     initials: Mapped[str] = mapped_column(String(8), default="")
     avatar_url: Mapped[str | None] = mapped_column(String(2048), nullable=True)
+    avatar_synced_url: Mapped[str | None] = mapped_column(String(2048), nullable=True)
     dept: Mapped[str | None] = mapped_column(String(32), nullable=True)
     role: Mapped[str | None] = mapped_column(String(128), nullable=True)
     roles: Mapped[list] = mapped_column(JSON, default=list)

@@ -44,6 +44,7 @@ class MemberMe(BaseModel):
     email: str
     initials: str
     avatar_url: str | None = None
+    avatar_synced_url: str | None = None
     dept: str | None = None
     role: str | None = None
     roles: list[str] = []
@@ -58,6 +59,13 @@ class MemberMe(BaseModel):
 
 SKIN_RE = re.compile(r"^[a-z0-9_-]{1,32}$")
 ACCENT_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
+
+
+class AvatarSyncUpdate(BaseModel):
+    """Marks the Google picture URL that was uploaded to Zitadel as the
+    member's avatar, so the callback doesn't re-upload on every login."""
+
+    url: str
 
 
 class CardPrefsUpdate(BaseModel):
