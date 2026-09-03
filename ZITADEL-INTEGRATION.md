@@ -196,7 +196,31 @@ function Avatar({ name, picture }: { name: string; picture?: string | null }) {
 > once an avatar is set. Confirm with the OIDC playground or `curl` after a user
 > has an avatar; if your version omits it, use the v2 user API below instead.
 
-### 4.2 Render other users' photos (e.g. store-management staff list)
+### 4.2 New projects / new backends — what needs (re)setting up?
+
+The avatar chain is **per user, not per project**. Adding a new ZITADEL project
+with its own backend does **not** require its own Actions setup when it serves
+the same Zitadel users:
+
+| Situation | Console/plumbing needed |
+|---|---|
+| New project, same users (already members of the portal org / users who log into the portal at least once) | Only the normal per-project OIDC app setup (project/app, redirect URIs, PKCE, JWT token type, roles). Avatar works automatically once the user has done one portal login. |
+| New project, users who **never** log into the portal | The new backend must implement the same capture pattern (§3: webhook endpoint + upload in its own login callback), because only the user's own login to *some* capturing backend can upload their avatar. Wire the feed either by adding the new backend as an **additional target on the same instance execution** (executions support multiple targets; each backend filters for its own users) or by creating a second execution on the same method scoped `include-org: <new org id>`. |
+| **New child org** with its own users | Same as the row above, plus the org's own OIDC project/app. The instance-default Google IdP and the global execution already cover the new org's logins — no IdP or execution-wide reconfiguration. Only the capturing backend (portal-like app + webhook target) is new. |
+
+Why: the instance execution fires for **every** Google login instance-wide and
+always POSTs to the configured target(s); the avatar upload binds the picture to
+the **Zitadel user**, and from then on any app resolves it via the `picture`
+claim / v2 user API. Only users that never flow through a capturing app remain
+without an uploaded avatar. Because an upload always requires *that user's own
+access token*, a backend can only capture avatars for users that sign into it —
+which is why each new org/user base needs its own capturing app; the Zitadel-side
+pieces (IdP, execution) are shared.
+
+The one per-project requirement that is *not* about avatars: every new OIDC app
+needs its own application config and (if backend-validated) JWT access tokens.
+
+### 4.3 Render other users' photos (e.g. store-management staff list)
 
 No per-user columns needed — resolve from ZITADEL with a service/bot token:
 
